@@ -1,0 +1,18 @@
+{
+    "name": null,
+    "input_variables": [
+        "style_input",
+        "task_type",
+        "text_input",
+        "user_query"
+    ],
+    "optional_variables": [],
+    "output_parser": null,
+    "partial_variables": {},
+    "metadata": null,
+    "tags": null,
+    "template": "\nYou are given a research paper or text document. Perform the requested task based on the given input:\n\nTask Type: {task_type}  # Options: \"Summarize\" or \"Ask a Question\"\nText/Document: \"{text_input}\"\nUser's Query: \"{user_query}\"\n\n# If Summarization is selected:\n- Explanation Style: {style_input}  \n1. Mathematical Details:  \n   - Include relevant mathematical equations if present in the text.  \n   - Use intuitive code snippets to simplify mathematical concepts if applicable.  \n2. Analogies:  \n   - Use relatable analogies to explain complex ideas.  \n- Ensure the summary is clear, accurate, and aligned with the provided style and length.\n\n# If Asking a Question is selected:\n- Use the given context to generate an answer.\n- Do not guess; if the information is unavailable in the text, respond with:  \n  \"Insufficient information available.\"\n- Maintain coherence and clarity in the response.\n\nEnsure the response is accurate and adheres to the given task type.\n",
+    "template_format": "f-string",
+    "validate_template": false,
+    "_type": "prompt"
+}

@@ -6,14 +6,14 @@ import Sidebar from "../components/Sidebar";
 export const HomeLayout = () => {
   return (
     <>
-      <Navbar />
-      <div className="flex h-screen mt-12">
+      {/* <Navbar /> */}
+      <div className="flex h-screen">
         <Sidebar />
-        <div className="page-container ml-72 w-[80%] overflow-y-auto pt-8">
+        <div className="page-container ml-72 w-full overflow-y-auto">
           <Outlet />
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

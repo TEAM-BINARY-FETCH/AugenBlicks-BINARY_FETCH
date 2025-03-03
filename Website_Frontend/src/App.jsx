@@ -11,7 +11,8 @@ import { AuthContextProvider } from "./context/AuthContext";
 
 import { ScriptContextProvider } from "./context/ScriptContext";
 import Dashboard from "./pages/Dashboard";
-import Community from "./pages/Community";
+import EditorPage from "./pages/EditorPage";
+import ProjectsPage from "./pages/ProjectsPage";
 
 function App() {
   return (
@@ -23,12 +24,12 @@ function App() {
               <Route index element={<Dashboard />} />
               <Route path="/about" element={<AboutUs />} />
               <Route path="/contact" element={<ContactUs />} />
-              <Route path="/community" element={<Community />} />
-              <Route path="/profile" element={<Profile />} /> 
-
+              <Route path="/projects" element={<ProjectsPage />} />
+              <Route path="/projects/:projectId" element={<EditorPage />} />
+              <Route path="/profile" element={<Profile />} />
             </Route>
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
 
           <Toaster />

@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+/* Add this after Tailwind imports */
+::-webkit-scrollbar {
+  display: none;
+}
+html {
+  scrollbar-width: none;
+}
+body {
+  -ms-overflow-style: none;
+  overflow-y: scroll;
+}

@@ -1,0 +1,8 @@
+misc
+*.ignore*
+.env
+.venv
+*_venv*
+node_modules
+__pycache__
+tmp

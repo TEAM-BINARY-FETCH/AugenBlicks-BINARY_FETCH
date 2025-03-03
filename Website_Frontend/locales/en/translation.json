@@ -1,0 +1,33 @@
+{
+  "dashboard": {
+    "title": "Dashboard Overview 🎙",
+    "totalPodcasts": "Total Podcasts Created",
+    "totalUsers": "Total Users",
+    "totalViews": "Total Views",
+    "totalLikes": "Total Likes",
+    "avgDuration": "Avg Podcast Duration",
+    "topPodcast": "Top Podcast",
+    "monthlyPodcasts": "Monthly Podcast Creations",
+    "voiceUsage": "AI Voice Usage",
+    "viewsGrowth": "Total Views Growth"
+  }, 
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "createContent": "Create Content",
+    "generateAudio": "Generate Audio",
+    "uploadPodcast": "Upload Podcast",
+    "yourPodcasts": "Your Podcasts",
+    "podcasterHub": "Podcaster Hub",
+    "webinars": "Webinars",
+    "tutorials": "Video Tutorials",
+    "community": "Community",
+    "profile": "Profile"
+  },
+  "navbar": {
+    "home": "Home",
+    "contactUs": "Contact Us",
+    "login": "Login",
+    "logout": "Log out",
+    "brandName": "Vocalect"
+  }
+}

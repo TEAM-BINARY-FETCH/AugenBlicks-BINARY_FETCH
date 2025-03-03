@@ -1,0 +1,72 @@
+export const webinarsData = [
+  {
+    id: 1,
+    title: "Podcasting 101: Getting Started",
+    date: "2024-09-25T14:00:00",
+    meetLink: "https://meet.google.com/xen-jnmn-vyn",
+    description: "Learn the fundamentals of starting your own podcast, from concept to execution.",
+  },
+  {
+    id: 2,
+    title: "Choosing the Right Podcast Equipment",
+    date: "2024-09-28T10:00:00",
+    meetLink: "https://meet.google.com/xen-jnmn-vyn",
+    description: "A complete guide to selecting the best microphones, mixers, and recording software.",
+  },
+  {
+    id: 3,
+    title: "Editing and Post-Production Basics",
+    date: "2024-10-01T16:00:00",
+    meetLink: "https://meet.google.com/xen-jnmn-vyn",
+    description: "Enhance your podcast with professional editing techniques and tools.",
+  },
+  {
+    id: 4,
+    title: "How to Market Your Podcast",
+    date: "2024-10-05T12:00:00",
+    meetLink: "https://meet.google.com/xen-jnmn-vyn",
+    description: "Strategies to grow your audience and promote your podcast effectively.",
+  },
+  {
+    id: 5,
+    title: "Interviewing Techniques for Engaging Conversations",
+    date: "2024-10-10T11:00:00",
+    meetLink: "https://meet.google.com/xen-jnmn-vyn",
+    description: "Master the art of interviewing guests to keep your listeners engaged.",
+  },
+  {
+    id: 6,
+    title: "Monetization Strategies for Podcasters",
+    date: "2024-10-15T09:00:00",
+    meetLink: "https://meet.google.com/xen-jnmn-vyn",
+    description: "Explore various ways to earn money from your podcast, from sponsorships to crowdfunding.",
+  },
+  {
+    id: 7,
+    title: "Podcast Hosting and Distribution",
+    date: "2024-10-20T13:00:00",
+    meetLink: "https://meet.google.com/xen-jnmn-vyn",
+    description: "A step-by-step guide to choosing a hosting platform and distributing your episodes.",
+  },
+  {
+    id: 8,
+    title: "Building a Personal Brand as a Podcaster",
+    date: "2024-10-25T15:00:00",
+    meetLink: "https://meet.google.com/xen-jnmn-vyn",
+    description: "Learn how to establish a unique identity and grow your influence in the podcasting space.",
+  },
+  {
+    id: 9,
+    title: "Optimizing Audio Quality for a Professional Sound",
+    date: "2024-10-30T14:00:00",
+    meetLink: "https://meet.google.com/xen-jnmn-vyn",
+    description: "Techniques to achieve crystal-clear audio with noise reduction and sound leveling.",
+  },
+  {
+    id: 10,
+    title: "Podcasting for Beginners: A Hands-On Workshop",
+    date: "2024-11-05T11:00:00",
+    meetLink: "https://meet.google.com/xen-jnmn-vyn",
+    description: "A practical session to help beginners record, edit, and publish their first episode.",
+  }
+];

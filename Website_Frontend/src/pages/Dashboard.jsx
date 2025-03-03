@@ -57,7 +57,7 @@ const Dashboard = () => {
       }, 0);
       setTotalLikes(likes);
     };
-    fetchPodcasts();
+    // fetchPodcasts();
   }, []);
 
   return (

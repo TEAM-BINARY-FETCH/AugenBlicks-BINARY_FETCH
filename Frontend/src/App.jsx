@@ -13,11 +13,13 @@ import { ScriptContextProvider } from "./context/ScriptContext";
 import Dashboard from "./pages/Dashboard";
 import EditorPage from "./pages/EditorPage";
 import ProjectsPage from "./pages/ProjectsPage";
+import { SocketContextProvider } from "./context/SocketContext";
 
 function App() {
   return (
     <>
       <AuthContextProvider>
+        <SocketContextProvider>
         <ScriptContextProvider>
           <Routes>
             <Route path="/" element={<HomeLayout />}>
@@ -34,6 +36,7 @@ function App() {
 
           <Toaster />
         </ScriptContextProvider>
+        </SocketContextProvider>
       </AuthContextProvider>
     </>
   );

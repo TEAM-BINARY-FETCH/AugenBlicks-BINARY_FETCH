@@ -1,69 +1,81 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FiPlus, FiFolder, FiClock, FiX } from "react-icons/fi";
+import { useAuthContext } from "../context/AuthContext";
+import axios from "axios";
+import { useProjectContext } from "../context/ProjectContext";
 
 const Dashboard = () => {
-  const [projects, setProjects] = useState([
-    { id: 1, name: "AI Chatbot", createdAt: "2024-03-01", status: "Active" },
-    { id: 2, name: "Podcast Manager", createdAt: "2024-02-18", status: "Completed" },
-    { id: 3, name: "License Plate Recognition", createdAt: "2024-01-25", status: "In Progress" },
-  ]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
+  const { authUser } = useAuthContext();
+  const [loading, setLoading] = useState(true);
+  const {projects,setProjects,projectLoading, setProjectLoading} = useProjectContext();
 
-  // Function to create a new project
-  const handleCreateProject = () => {
+
+  // Handle creating a new project
+  const handleCreateProject = async () => {
     if (newProjectName.trim() === "") return;
 
-    const newProject = {
-      id: projects.length + 1,
-      name: newProjectName,
-      createdAt: new Date().toISOString().split("T")[0],
-      status: "Active",
-    };
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/projects`, {
+        title: newProjectName,
+        ownerId: authUser._id,
+      });
 
-    setProjects([...projects, newProject]);
-    setNewProjectName("");
-    setModalOpen(false);
+      if (response.status === 201) {
+        setProjects([...projects, response.data.project]); // Add to state
+        setNewProjectName("");
+        setModalOpen(false);
+      }
+    } catch (error) {
+      console.error("Error creating project:", error);
+    }
   };
 
   return (
     <div className="container mx-auto p-6 bg-gray-900 min-h-screen text-white">
       {/* Dashboard Header */}
-      <h2 className="text-3xl font-bold mb-6">Your Projects</h2>
-
-      {/* Create New Project Button */}
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setModalOpen(true)}
-        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-3 rounded-lg shadow-md hover:bg-blue-700 transition-all mb-6"
-      >
-        <FiPlus className="text-lg" />
-        Create New Project
-      </motion.button>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold">Your Projects</h2>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setModalOpen(true)}
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-3 rounded-lg shadow-md hover:bg-blue-700 transition-all"
+        >
+          <FiPlus className="text-lg" />
+          Create New Project
+        </motion.button>
+      </div>
 
       {/* Project Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {projects.map((project) => (
-          <motion.div
-            key={project.id}
-            whileHover={{ scale: 1.03 }}
-            className="bg-gray-800 p-5 rounded-lg shadow-md text-white cursor-pointer transition-all"
-          >
-            <div className="flex justify-between items-center">
-              <FiFolder className="text-yellow-400 text-3xl" />
-              <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(project.status)}`}>
-                {project.status}
-              </span>
-            </div>
-            <h3 className="text-lg font-semibold mt-3">{project.name}</h3>
-            <p className="text-sm text-gray-400 mt-1 flex items-center gap-1">
-              <FiClock /> {project.createdAt}
-            </p>
-          </motion.div>
-        ))}
-      </div>
+      {projectLoading ? (
+        <p className="text-gray-400 text-center">Loading projects...</p>
+      ) : projects.length === 0 ? (
+        <p className="text-gray-400 text-center">No projects yet. Start by creating one!</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {projects?.map((project) => (
+            <motion.div
+              key={project._id}
+              whileHover={{ scale: 1.03 }}
+              className="bg-gray-800 p-5 rounded-lg shadow-md text-white cursor-pointer transition-all"
+            >
+              <div className="flex justify-between items-center">
+                <FiFolder className="text-yellow-400 text-3xl" />
+                <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(project.status)}`}>
+                  {project.status || "Active"}
+                </span>
+              </div>
+              <h3 className="text-lg font-semibold mt-3">{project.title}</h3>
+              <p className="text-sm text-gray-400 mt-1 flex items-center gap-1">
+                <FiClock /> {new Date(project.createdAt).toLocaleDateString()}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       {/* Create Project Modal */}
       {isModalOpen && (

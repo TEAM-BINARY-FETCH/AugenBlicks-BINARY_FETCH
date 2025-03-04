@@ -11,6 +11,18 @@ export const io = new Server(server, {
   },
 });
 
+const userSocketMap = {};
 io.on("connection", (socket) => {
   console.log("a user connected", socket.id);
+
+  socket.on("join", ({ socketId, projectId ,userId}) => {
+    console.log("user joined", socketId, projectId,userId);
+    userSocketMap[socketId] = userId;
+    
+    socket.join(projectId);
+  });
+  socket.on("disconnect", () => {
+    console.log("user disconnected", socket.id);
+  }); 
+
 });

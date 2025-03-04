@@ -238,7 +238,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               <ul className="space-y-3">
                 <li>
                   <Link
-                    to="/settings"
+                    to="/setting"
                     className="p-3 rounded hover:bg-gray-700 flex items-center gap-2"
                   >
                     <AiOutlineSetting /> Settings

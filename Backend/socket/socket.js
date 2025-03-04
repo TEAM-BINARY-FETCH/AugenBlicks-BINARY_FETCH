@@ -22,6 +22,7 @@ io.on("connection", (socket) => {
     console.log("user joined", socketId, projectId, userId);
     socket.join(projectId);
     const users = await User.find();
+    // console.log("users : ", users);
     // console.log("userSocketMap : ", userSocketMap);
     // console.log("users : ", users);
     const clients = Array.from(io.sockets.adapter.rooms.get(projectId)).map(

@@ -26,7 +26,7 @@ import useGetVersion from "../hooks/useGetVersion";
 export default function App() {
   const { socket } = useSocketContext();
   const { currentProject, currentDocument, setContent, documents } =
-    useProjectContext();
+  useProjectContext();
   const [ModalOpen, setModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const editorRef = useRef(null);
@@ -43,6 +43,8 @@ export default function App() {
   const { generateAIContent } = useAITemplate();
   const { authUser } = useAuthContext();
   const { versionLoading, versions, getVersion,setVersions } = useGetVersion();
+  
+  useSyncChange(editorRef);
 
   // Fetch saved content when the component mounts or the document changes
   useEffect(() => {

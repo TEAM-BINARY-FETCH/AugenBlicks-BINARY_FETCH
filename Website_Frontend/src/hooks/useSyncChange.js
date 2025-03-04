@@ -17,7 +17,7 @@ const useSyncChange = (editorRef) => {
         doc: currentDocument,
         project: currentProject,
         userId: authUser._id,
-      });s
+      });
     }
   }, [content, socket, currentDocument, currentProject, authUser]);
 

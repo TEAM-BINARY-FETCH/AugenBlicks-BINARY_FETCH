@@ -26,7 +26,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const [activeProject, setActiveProject] = useState(null);
   const [renamingDocId, setRenamingDocId] = useState(null);
   const [newDocName, setNewDocName] = useState("");
-  const { projects } = useProjectContext();
+  const { projects, setCurrentDocument, setCurrentProject } = useProjectContext();
   const { loading, documents, getDocuments, renameDocument, deleteDocument } = useGetDocument();
   const { addDocument } = useAddDocument();
 
@@ -109,7 +109,10 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                 <div key={project._id}>
                   <div
                     className="p-3 rounded hover:bg-gray-700 cursor-pointer flex items-center justify-between"
-                    onClick={() => toggleProject(project._id)}
+                    onClick={() => {
+                      toggleProject(project._id);
+                      setCurrentProject(project);
+                    }}
                   >
                     <span>{project.title}</span>
                     <div className="flex gap-2">
@@ -137,6 +140,12 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                         documents?.map((doc) => (
                           <li
                             key={doc._id}
+                            onClick={() => {
+                              setCurrentDocument(doc);
+                              navigate(
+                                `/projects/${project._id}/documents/${doc._id}`
+                              );
+                            }}
                             className="text-sm flex items-center gap-2 justify-between"
                           >
                             {renamingDocId === doc._id ? (

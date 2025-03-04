@@ -12,11 +12,25 @@ import {
 import {customTemplates} from "./../utils/customTemplates";
 import AIGenerateModal from "../components/AIGenerateModal.jsx";
 import useAITemplate from "../hooks/useAITemplate";
+import { useSocketContext } from "../context/SocketContext.jsx";
+import useSyncChange from "../hooks/useSyncChange.js";
+import { useProjectContext } from "../context/ProjectContext.jsx";
+import axios from "axios";
+import OnlineUsers from "../components/OnlineUsers.jsx";
+import { FiUserPlus, FiX } from "react-icons/fi";
+import { motion } from "framer-motion";
+import toast, { Toaster } from "react-hot-toast";
 
 
 
 
 export default function App() {
+  const {socket} = useSocketContext();
+  const {currentProject,currentDocument,setContent,documents} = useProjectContext();
+  const [ModalOpen, setModalOpen] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+
+  useSyncChange();
   const [editorContent, setEditorContent] = useState("");
   const editorRef = useRef(null);
   const [suggestedText, setSuggestedText] = useState("");
@@ -102,8 +116,47 @@ export default function App() {
       alert("Failed to generate content. Please try again.");
     }
   };
+
+
+  const handleAddUser = async () => {
+    if (!userEmail.trim()) {
+      toast.error("Please enter a valid email");
+      return;
+    }
+    // console.log("Adding user:", userEmail);
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/projects/add-member`,
+        {
+          projectId: currentProject._id,
+          userEmail,
+        }
+      );
+      toast.success("User added successfully!");
+      setUserEmail("");
+      setModalOpen(false);
+    } catch (error) {
+      console.log("Error adding user:", error);
+      toast.error("Failed to add user");
+    }
+  };
+
   return (
     <div className="">
+      <div className="flex justify-between items-center p-4 bg-gray-800 text-white">
+        <h1>Document</h1>
+        <div className="flex items-center gap-4">
+          <OnlineUsers />
+          <button
+            onClick={() => setModalOpen(true)}
+            className="flex items-center gap-2 bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition-all"
+          >
+            <FiUserPlus className="text-lg" />
+            Add User
+          </button>
+        </div>
+      </div>
       <div className="mb-2 flex items-center gap-x-2">
         <label htmlFor="template-select">Choose a Template: </label>
 
@@ -165,7 +218,7 @@ export default function App() {
             "advcode",
             "editimage",
             "advtemplate",
-            "ai",
+            // "ai",
             "mentions",
             "tinycomments",
             "tableofcontents",
@@ -240,6 +293,8 @@ export default function App() {
         }}
         initialValue="Welcome to TinyMCE!"
       />
+      
+      
 
       <AIGenerateModal
       className="w-[400px]"
@@ -249,7 +304,7 @@ export default function App() {
       />
 
       {/* Suggestion UI */}
-      {suggestedText && (
+      {/* {suggestedText && (
         <div
           style={{
             position: "absolute",
@@ -265,7 +320,48 @@ export default function App() {
         >
           {suggestedText} (Press Tab to accept)
         </div>
+      )} */}
+
+{ModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-gray-800 p-6 rounded-lg shadow-md w-96"
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold text-white">Add User</h3>
+              <FiX
+                className="text-gray-400 cursor-pointer hover:text-gray-200"
+                onClick={() => setModalOpen(false)}
+              />
+            </div>
+            <input
+              type="email"
+              value={userEmail}
+              onChange={(e) => setUserEmail(e.target.value)}
+              placeholder="Enter user email"
+              className="w-full p-2 rounded bg-gray-700 text-white outline-none border border-gray-600 focus:border-blue-500"
+            />
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => setModalOpen(false)}
+                className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddUser}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Add User
+              </button>
+            </div>
+          </motion.div>
+        </div>
       )}
+
 
       {/* AI Chat Button */}
       <AIChatBot

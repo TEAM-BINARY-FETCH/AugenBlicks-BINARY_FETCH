@@ -95,3 +95,27 @@ export const getDocumentsByProject = async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 };
+
+
+export const renameDocument = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title } = req.body;
+
+    const document = await Document.findByIdAndUpdate(
+      id,
+      { title },
+      { new: true }
+    );
+
+    if (!document) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    res.json({ message: "Document renamed", document });
+  }
+  catch(error){
+    res.status(500).json({ message: "Error in Rename Document Controller", error });
+  }
+}
+

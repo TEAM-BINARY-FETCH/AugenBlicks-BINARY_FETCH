@@ -36,7 +36,7 @@ export default function App() {
     const timer = setTimeout(() => {
       console.log('Fetching suggestion...');
       fetchSuggestion(editorContent); 
-    }, 3000); // Fetch suggestion after 3 seconds of inactivity
+    }, 1000); // Fetch suggestion after 3 seconds of inactivity
     return () => clearTimeout(timer);
   }, [editorContent]);
 

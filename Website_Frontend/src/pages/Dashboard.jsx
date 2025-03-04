@@ -4,6 +4,10 @@ import { FiPlus, FiFolder, FiClock, FiX } from "react-icons/fi";
 import { useAuthContext } from "../context/AuthContext";
 import axios from "axios";
 import { useProjectContext } from "../context/ProjectContext";
+import { FileHeart, FolderHeart, Heart, Star } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import useProject from "../hooks/useProject.js";
+
 
 const Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -11,7 +15,11 @@ const Dashboard = () => {
   const { authUser } = useAuthContext();
   const [loading, setLoading] = useState(true);
   const {projects,setProjects,projectLoading, setProjectLoading} = useProjectContext();
+  const {AddTofavorite, favoriteProjects, getFavoriteProjects, removeFavoriteProject} = useProject();
 
+  useEffect(() => {
+    getFavoriteProjects();
+  }, [favoriteProjects]);
 
   // Handle creating a new project
   const handleCreateProject = async () => {
@@ -49,33 +57,118 @@ const Dashboard = () => {
         </motion.button>
       </div>
 
-      {/* Project Grid */}
-      {projectLoading ? (
-        <p className="text-gray-400 text-center">Loading projects...</p>
-      ) : projects.length === 0 ? (
-        <p className="text-gray-400 text-center">No projects yet. Start by creating one!</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {projects?.map((project) => (
-            <motion.div
-              key={project._id}
-              whileHover={{ scale: 1.03 }}
-              className="bg-gray-800 p-5 rounded-lg shadow-md text-white cursor-pointer transition-all"
-            >
-              <div className="flex justify-between items-center">
-                <FiFolder className="text-yellow-400 text-3xl" />
-                <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(project.status)}`}>
-                  {project.status || "Active"}
-                </span>
-              </div>
-              <h3 className="text-lg font-semibold mt-3">{project.title}</h3>
-              <p className="text-sm text-gray-400 mt-1 flex items-center gap-1">
-                <FiClock /> {new Date(project.createdAt).toLocaleDateString()}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      )}
+      <Tabs defaultValue="all-projects" className="w-full mx-auto text-2xl">
+        <TabsList className="grid w-full grid-cols-2 bg-accent-foreground text-white">
+          <TabsTrigger value="all-projects" className="text-xl">
+            All Projects
+          </TabsTrigger>
+          <TabsTrigger value="favourite-projects" className="text-xl">
+            {" "}
+            <Star className="text-red-500 text-2xl" />
+            Favourite Projects
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="all-projects">
+          {/* Project Grid */}
+          {projectLoading ? (
+            <p className="text-gray-400 text-center">Loading projects...</p>
+          ) : projects.length === 0 ? (
+            <p className="text-gray-400 text-center">
+              No projects yet. Start by creating one!
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 my-3">
+              {projects?.map((project) => (
+                <motion.div
+                  key={project._id}
+                  whileHover={{ scale: 1.03 }}
+                  className="bg-gray-800 p-5 rounded-lg shadow-md text-white cursor-pointer transition-all"
+                >
+                  <div className="flex justify-between items-center">
+                    <FiFolder className="text-yellow-400 text-3xl" />
+                    <div className="flex items-center gap-2">
+                      {/* <Heart className={`hover:fill-red-500 hover:text-yellow-500`} onClick={()=> AddTofavorite(project._id)}/> */}
+                      <Heart
+                        className={`cursor-pointer ${
+                          favoriteProjects.some(
+                            (fav) => fav._id === project._id
+                          )
+                            ? "fill-red-500 text-red-500"
+                            : ""
+                        }`}
+                        onClick={async () => {
+                          if (
+                            favoriteProjects.some(
+                              (fav) => fav._id === project._id
+                            )
+                          ) {
+                            await removeFavoriteProject(project._id);
+                          } else {
+                            await AddTofavorite(project._id);
+                          }
+                          getFavoriteProjects(); // Refresh favorites after updating
+                        }}
+                      />
+
+                      <span
+                        className={`text-xs px-2 py-1 rounded-full ${getStatusColor(
+                          project.status
+                        )}`}
+                      >
+                        {project.status || "Active"}
+                      </span>
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-semibold mt-3">
+                    {project.title}
+                  </h3>
+                  <p className="text-sm text-gray-400 mt-1 flex items-center gap-1">
+                    <FiClock />{" "}
+                    {new Date(project.createdAt).toLocaleDateString()}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+        <TabsContent value="favourite-projects">
+          {favoriteProjects.length === 0 ? (
+            <p className="text-gray-400 text-center">
+              No favourite projects yet.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 my-3">
+              {favoriteProjects?.map((project) => (
+                <motion.div
+                  key={project._id}
+                  whileHover={{ scale: 1.03 }}
+                  className="bg-gray-800 p-5 rounded-lg shadow-md text-white cursor-pointer transition-all"
+                >
+                  <div className="flex justify-between items-center">
+                    <FiFolder className="text-yellow-400 text-3xl" />
+                    <div className="flex items-center gap-2">
+                      <Heart
+                        className="cursor-pointer fill-red-500 text-red-500"
+                        onClick={async () => {
+                          await removeFavoriteProject(project._id);
+                          getFavoriteProjects(); // Refresh favorites after removing
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-semibold mt-3">
+                    {project.title}
+                  </h3>
+                  <p className="text-sm text-gray-400 mt-1 flex items-center gap-1">
+                    <FiClock />{" "}
+                    {new Date(project.createdAt).toLocaleDateString()}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
 
       {/* Create Project Modal */}
       {isModalOpen && (
@@ -87,8 +180,13 @@ const Dashboard = () => {
             className="bg-gray-800 p-6 rounded-lg shadow-md w-96"
           >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold text-white">Create New Project</h3>
-              <FiX className="text-gray-400 cursor-pointer hover:text-gray-200" onClick={() => setModalOpen(false)} />
+              <h3 className="text-xl font-semibold text-white">
+                Create New Project
+              </h3>
+              <FiX
+                className="text-gray-400 cursor-pointer hover:text-gray-200"
+                onClick={() => setModalOpen(false)}
+              />
             </div>
             <input
               type="text"

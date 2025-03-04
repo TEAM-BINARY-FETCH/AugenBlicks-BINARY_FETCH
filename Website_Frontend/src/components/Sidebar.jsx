@@ -14,11 +14,20 @@ import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
 import { useProjectContext } from "../context/ProjectContext";
 import useGetDocument from "./../hooks/useGetDocument";
 import useAddDocument from "../hooks/useAddDocument";
+import { EllipsisVertical, FolderPen, IndentDecrease, Trash2 } from 'lucide-react';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { Button } from "@/components/ui/button";
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const [activeProject, setActiveProject] = useState(null);
+  const [renamingDocId, setRenamingDocId] = useState(null);
+  const [newDocName, setNewDocName] = useState("");
   const { projects } = useProjectContext();
-  const { loading, documents, getDocuments } = useGetDocument();
+  const { loading, documents, getDocuments, renameDocument, deleteDocument } = useGetDocument();
   const { addDocument } = useAddDocument();
 
   const toggleProject = (projectId) => {
@@ -27,6 +36,19 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     } else {
       setActiveProject(projectId);
       getDocuments(projectId);
+    }
+  };
+
+  const handleRename = async (docId, newName) => {
+    try {
+      console.log('docId',docId);
+      console.log('newName',newName);
+      await renameDocument(docId, newName);
+      getDocuments(activeProject);
+      setRenamingDocId(null);
+      setNewDocName("");
+    } catch (error) {
+      console.error("Failed to rename document:", error);
     }
   };
 
@@ -43,12 +65,16 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           onClick={() => setIsOpen(!isOpen)}
           className="absolute top-5 right-[20px] bg-gray-800 text-white p-2 rounded-full shadow-md transition-all"
         >
-          {isOpen ? <CloseIcon /> : <MenuIcon />}
+          {isOpen ? <IndentDecrease /> : <MenuIcon />}
         </button>
 
         {/* Scrollable Sidebar Content */}
         <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
-          <div className={`p-4 transition-all ${isOpen ? "opacity-100" : "opacity-0 hidden"}`}>
+          <div
+            className={`p-4 transition-all ${
+              isOpen ? "opacity-100" : "opacity-0 hidden"
+            }`}
+          >
             <h2 className="text-xl font-bold mb-4 mt-4">Notion Sidebar</h2>
 
             {/* Search */}
@@ -64,10 +90,17 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             {/* Navigation */}
             <ul className="space-y-3">
               <li>
-                <Link to="/" className="block p-3 rounded hover:bg-gray-700">Home</Link>
+                <Link to="/" className="block p-3 rounded hover:bg-gray-700">
+                  Home
+                </Link>
               </li>
               <li>
-                <Link to="/favorites" className="block p-3 rounded hover:bg-gray-700">Favorites</Link>
+                <Link
+                  to="/favorites"
+                  className="block p-3 rounded hover:bg-gray-700"
+                >
+                  Favorites
+                </Link>
               </li>
 
               {/* Projects & Documents Dropdown */}
@@ -83,12 +116,17 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                       {/* Add Document Button */}
                       <FiPlus
                         className="cursor-pointer text-gray-400 hover:text-white"
-                        onClick={(e) => {
+                        onClick={async (e) => {
                           e.stopPropagation();
-                          addDocument({ projectId: project._id });
+                          await addDocument({ projectId: project._id });
+                          getDocuments(project._id);
                         }}
                       />
-                      {activeProject === project._id ? <FiChevronDown /> : <FiChevronRight />}
+                      {activeProject === project._id ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
                     </div>
                   </div>
 
@@ -97,17 +135,65 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                     <ul className="pl-6 space-y-2">
                       {documents?.length > 0 ? (
                         documents?.map((doc) => (
-                          <li key={doc._id}>
-                            <Link
-                              to={`/projects/${project._id}/documents/${doc._id}`}
-                              className="block p-2 rounded hover:bg-gray-700"
-                            >
-                              {doc.title}
-                            </Link>
+                          <li
+                            key={doc._id}
+                            className="text-sm flex items-center gap-2 justify-between"
+                          >
+                            {renamingDocId === doc._id ? (
+                              <input
+                                type="text"
+                                value={newDocName}
+                                onChange={(e) => setNewDocName(e.target.value)}
+                                onBlur={() => handleRename(doc._id, newDocName)}
+                                onKeyPress={(e) => {
+                                  if (e.key === "Enter") {
+                                    handleRename(doc._id, newDocName);
+                                  }
+                                }}
+                                autoFocus
+                                className="bg-transparent outline-none text-white"
+                              />
+                            ) : (
+                              <Link
+                                to={`/projects/${project._id}/documents/${doc._id}`}
+                                className="block p-2 rounded hover:bg-gray-700"
+                              >
+                                {doc.title}
+                              </Link>
+                            )}
+                            <HoverCard>
+                              <HoverCardTrigger>
+                                <EllipsisVertical />
+                              </HoverCardTrigger>
+                              <HoverCardContent className="flex gap-2 flex-col ">
+                                <Button
+                                  className="w-full h-full"
+                                  onClick={() => {
+                                    setRenamingDocId(doc._id);
+                                    setNewDocName(doc.title);
+                                  }}
+                                >
+                                  <FolderPen /> Rename
+                                </Button>
+                                <Button
+                                  className="w-full h-full"
+                                  onClick={async () => {
+                                    await deleteDocument(doc._id);
+                                    getDocuments(activeProject);
+                                  }}
+                                  variant="destructive"
+                                >
+                                  <Trash2 />
+                                  Delete
+                                </Button>
+                              </HoverCardContent>
+                            </HoverCard>
                           </li>
                         ))
                       ) : (
-                        <li className="text-gray-400 text-sm pl-2">No documents yet</li>
+                        <li className="text-gray-400 text-sm pl-2">
+                          No documents yet
+                        </li>
                       )}
                     </ul>
                   )}
@@ -115,27 +201,36 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               ))}
 
               <li>
-                <Link to="/trash" className="p-3 rounded hover:bg-gray-700 flex items-center gap-2">
+                <Link
+                  to="/trash"
+                  className="p-3 rounded hover:bg-gray-700 flex items-center gap-2"
+                >
                   <BiTrash /> Trash
                 </Link>
               </li>
             </ul>
 
             {/* Add New Page */}
-            <button className="mt-4 flex items-center gap-2 bg-blue-500 p-3 rounded w-full text-center">
+            {/* <button className="mt-4 flex items-center gap-2 bg-blue-500 p-3 rounded w-full text-center">
               <FiPlus /> New Page
-            </button>
+            </button> */}
 
             {/* Settings & Templates */}
             <div className="mt-6 border-t border-gray-700 pt-4">
               <ul className="space-y-3">
                 <li>
-                  <Link to="/settings" className="p-3 rounded hover:bg-gray-700 flex items-center gap-2">
+                  <Link
+                    to="/settings"
+                    className="p-3 rounded hover:bg-gray-700 flex items-center gap-2"
+                  >
                     <AiOutlineSetting /> Settings
                   </Link>
                 </li>
                 <li>
-                  <Link to="/templates" className="p-3 rounded hover:bg-gray-700 flex items-center gap-2">
+                  <Link
+                    to="/templates"
+                    className="p-3 rounded hover:bg-gray-700 flex items-center gap-2"
+                  >
                     <HiOutlineTemplate /> Templates
                   </Link>
                 </li>

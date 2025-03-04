@@ -1,4 +1,5 @@
 import Project from "../models/project.model.js";
+import User from "../models/user.model.js";
 
 /**
  * Create a new project
@@ -91,5 +92,50 @@ export const getProjectsByUser = async (req, res) => {
     res.json(projects);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
+  }
+};
+
+
+export const addFavoriteProject = async (req, res) => {
+  const {id: projectId} = req.params;
+  const {userId} = req.user;
+  console.log('Adding project to favorites:', projectId, userId);
+  try {
+    await User.findByIdAndUpdate(
+      userId,
+      { $addToSet: { favouriteProjects: projectId } },
+      { new: true }
+    )
+    res.json({ message: "Project added to favorites" });
+  } catch (error) {
+    res.status(500).json({ message: "Error in AddFavorite Controller", error });
+  }
+};
+
+
+export const removeFavoriteProject = async (req, res) => {
+  const {id: projectId} = req.params;
+  const {userId} = req.user;
+  try {
+    await User.findByIdAndUpdate(
+      userId,
+      { $pull: { favouriteProjects: projectId } }, 
+      { new: true }
+    );
+    res.json({ message: "Project removed from favorites" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error in removeFavoriteProject controller", error });
+  }
+};
+
+export const getFavoriteProjects = async (req, res) => {
+  const {userId} = req.user;
+  try {
+    const user = await User.findById(userId).populate("favouriteProjects"); 
+    res.json(user.favouriteProjects);
+  } catch (error) {
+    console.error("Error fetching favorite projects:", error);
+    res.status(500).json({ message: "Server error in getFavoriteProjects controller", error
+    });
   }
 };

@@ -5,6 +5,7 @@ import {
   updateDocument,
   deleteDocument,
   getDocumentsByProject,
+  renameDocument
 } from "../controllers/document.controller.js";
 
 const router = express.Router();
@@ -14,5 +15,7 @@ router.get("/:id", getDocumentById);
 router.put("/:id", updateDocument);
 router.delete("/:id", deleteDocument);
 router.get("/project/:projectId", getDocumentsByProject);
+router.put("/rename/:id", renameDocument);
+
 
 export default router;

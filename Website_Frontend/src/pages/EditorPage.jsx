@@ -51,7 +51,17 @@ export default function App() {
       setSavedContent(currentDocument.content);
     };
 
+    const updateViews = async () => {
+      try {
+        const res = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/documents/update-views/${currentDocument._id}`);
+        console.log("Views updated:", res.data);
+      } catch (error) {
+        console.log("Error updating views:", error);
+      }
+    };
+
     fetchSavedContent();
+    updateViews();
   }, [currentDocument?._id]); // Re-fetch when the document changes
 
   const handleEditorInit = (evt, editor) => {
@@ -333,6 +343,46 @@ export default function App() {
           }}
           initialValue={editorContent} // Set initial value to fetched content
         />
+      )}
+
+{ModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-gray-800 p-6 rounded-lg shadow-md w-96"
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold text-white">Add User</h3>
+              <FiX
+                className="text-gray-400 cursor-pointer hover:text-gray-200"
+                onClick={() => setModalOpen(false)}
+              />
+            </div>
+            <input
+              type="email"
+              value={userEmail}
+              onChange={(e) => setUserEmail(e.target.value)}
+              placeholder="Enter user email"
+              className="w-full p-2 rounded bg-gray-700 text-white outline-none border border-gray-600 focus:border-blue-500"
+            />
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => setModalOpen(false)}
+                className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddUser}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Add User
+              </button>
+            </div>
+          </motion.div>
+        </div>
       )}
 
       <AIGenerateModal

@@ -5,7 +5,8 @@ import {
   updateDocument,
   deleteDocument,
   getDocumentsByProject,
-  renameDocument
+  renameDocument,
+  updateViews
 } from "../controllers/document.controller.js";
 
 const router = express.Router();
@@ -16,6 +17,7 @@ router.put("/:id", updateDocument);
 router.delete("/:id", deleteDocument);
 router.get("/project/:projectId", getDocumentsByProject);
 router.put("/rename/:id", renameDocument);
+router.put("/update-views/:id", updateViews);
 
 
 export default router;

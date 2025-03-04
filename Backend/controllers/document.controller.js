@@ -131,3 +131,19 @@ export const renameDocument = async (req, res) => {
   }
 }
 
+
+export const updateViews =async (req,res) => {
+  try{
+    const {id} = req.params;
+    const document = await Document.findById(id);
+    if(!document){
+      return res.status(404).json({message:"Document not found"});
+    }
+    document.views = document.views + 1;
+    await document.save();
+    res.json({message:"Document views updated",document});
+  }
+  catch(error){
+    res.status(500).json({message:"Server error",error});
+  }
+}

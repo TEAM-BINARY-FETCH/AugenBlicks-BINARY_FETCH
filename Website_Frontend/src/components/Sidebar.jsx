@@ -14,21 +14,28 @@ import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
 import { useProjectContext } from "../context/ProjectContext";
 import useGetDocument from "./../hooks/useGetDocument";
 import useAddDocument from "../hooks/useAddDocument";
-import { EllipsisVertical, FolderPen, IndentDecrease, Trash2 } from 'lucide-react';
+import {
+  EllipsisVertical,
+  FolderPen,
+  IndentDecrease,
+  Trash2,
+} from "lucide-react";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const [activeProject, setActiveProject] = useState(null);
   const [renamingDocId, setRenamingDocId] = useState(null);
   const [newDocName, setNewDocName] = useState("");
-  const { projects, setCurrentDocument, setCurrentProject } = useProjectContext();
-  const { loading, documents, getDocuments, renameDocument, deleteDocument } = useGetDocument();
+  const { projects, setCurrentDocument, setCurrentProject } =
+    useProjectContext();
+  const { loading, documents, getDocuments, renameDocument, deleteDocument } =
+    useGetDocument();
   const { addDocument } = useAddDocument();
   const navigate = useNavigate();
 
@@ -43,8 +50,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
   const handleRename = async (docId, newName) => {
     try {
-      console.log('docId',docId);
-      console.log('newName',newName);
+      console.log("docId", docId);
+      console.log("newName", newName);
       await renameDocument(docId, newName);
       getDocuments(activeProject);
       setRenamingDocId(null);
@@ -176,7 +183,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                               <HoverCardTrigger>
                                 <EllipsisVertical />
                               </HoverCardTrigger>
-                              <HoverCardContent className="flex gap-2 flex-col ">
+                              <HoverCardContent className="flex gap-2 flex-col relative right-20 z-50 bg-gray-800 p-2 rounded shadow-lg">
                                 <Button
                                   className="w-full h-full"
                                   onClick={() => {

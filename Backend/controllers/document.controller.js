@@ -1,5 +1,6 @@
 import Document from "../models/document.model.js";
 import Project from "../models/project.model.js";
+import VersionHistory from "../models/versionHistory.model.js";
 
 
 export const createDocument = async (req, res) => {
@@ -43,27 +44,38 @@ export const getDocumentById = async (req, res) => {
 /**
  * Update a document's content
  */
+
+
 export const updateDocument = async (req, res) => {
   try {
     const { id } = req.params;
-    const { content } = req.body;
+    const { content, userId } = req.body; 
 
-    const document = await Document.findByIdAndUpdate(
-      id,
-      { content },
-      { new: true }
-    );
-
+    const document = await Document.findById(id);
     if (!document) {
       return res.status(404).json({ message: "Document not found" });
     }
 
-    res.json({ message: "Document updated", document });
+    const versionCount = await VersionHistory.countDocuments({ document: id });
+
+    const newVersion = new VersionHistory({
+      document: id,
+      version_number: versionCount + 1,
+      content,
+      userId,
+    });
+
+    await newVersion.save();
+
+    document.content = content;
+    await document.save();
+
+    res.json({ message: "Document updated", document, version: newVersion });
   } catch (error) {
+    console.error("Error updating document:", error);
     res.status(500).json({ message: "Server error", error });
   }
 };
-
 /**
  * Delete a document
  */

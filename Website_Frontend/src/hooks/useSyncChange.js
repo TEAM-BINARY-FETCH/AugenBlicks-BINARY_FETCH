@@ -8,10 +8,10 @@ const useSyncChange = () => {
   const { content, setContent, currentDocument, currentProject, documents ,setDocuments} =
     useProjectContext();
   const { authUser } = useAuthContext();
-  // console.log("documents  in sync change",documents);
+  console.log("documents  in sync change",documents);
 
   useEffect(() => {
-    // console.log("editor content in sync change", content, typeof content);
+    console.log("editor content in sync change", content, typeof content);
     if (socket) {
       socket.emit("contentChange", {
         text: content,

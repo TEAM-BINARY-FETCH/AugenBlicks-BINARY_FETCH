@@ -21,6 +21,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom"; 
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const [activeProject, setActiveProject] = useState(null);
@@ -29,6 +30,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const { projects, setCurrentDocument, setCurrentProject } = useProjectContext();
   const { loading, documents, getDocuments, renameDocument, deleteDocument } = useGetDocument();
   const { addDocument } = useAddDocument();
+  const navigate = useNavigate();
 
   const toggleProject = (projectId) => {
     if (activeProject === projectId) {

@@ -1,5 +1,6 @@
 import Project from "../models/project.model.js";
 import User from "../models/user.model.js";
+import Document from "../models/document.model.js";
 
 /**
  * Create a new project
@@ -35,25 +36,30 @@ export const getProjectById = async (req, res) => {
   }
 };
 
-/**
- * Add a member to a project
- */
+
 export const addMemberToProject = async (req, res) => {
   try {
-    const { projectId, userId } = req.body;
+    const { projectId, userEmail } = req.body;
+
+    const user = await User.findOne({ email: userEmail });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     const project = await Project.findByIdAndUpdate(
       projectId,
-      { $addToSet: { members: userId } }, // Prevent duplicate members
+      { $addToSet: { members: user._id } },
       { new: true }
-    ).populate("members");
+    ).populate("members", "name email");
 
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
     }
 
-    res.json({ message: "Member added", project });
+    res.json({ message: "Member added successfully", project });
   } catch (error) {
+    console.error("Error adding member:", error);
     res.status(500).json({ message: "Server error", error });
   }
 };
@@ -81,16 +87,20 @@ export const removeMemberFromProject = async (req, res) => {
   }
 };
 
-/**
- * Get all projects for a user
- */
 export const getProjectsByUser = async (req, res) => {
   try {
     const { userId } = req.params;
+
+    // Find projects where the user is a member
     const projects = await Project.find({ members: userId });
 
-    res.json(projects);
+    // Get all documents for the user's projects
+    const projectIds = projects.map((project) => project._id);
+    const documents = await Document.find({ project: { $in: projectIds } });
+
+    res.json({ projects, documents });
   } catch (error) {
+    console.error("Error fetching projects and documents:", error);
     res.status(500).json({ message: "Server error", error });
   }
 };

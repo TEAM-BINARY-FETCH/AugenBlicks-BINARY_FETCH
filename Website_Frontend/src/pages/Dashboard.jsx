@@ -19,7 +19,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     getFavoriteProjects();
-  }, [favoriteProjects]);
+  }, []);
 
   // Handle creating a new project
   const handleCreateProject = async () => {

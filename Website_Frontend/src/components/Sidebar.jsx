@@ -41,7 +41,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         {/* Sidebar Toggle Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="absolute top-5 right-[10px] bg-gray-800 text-white p-2 rounded-full shadow-md transition-all"
+          className="absolute top-5 right-[20px] bg-gray-800 text-white p-2 rounded-full shadow-md transition-all"
         >
           {isOpen ? <CloseIcon /> : <MenuIcon />}
         </button>

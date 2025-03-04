@@ -17,7 +17,7 @@ function useGetDocument() {
     console.log("checkinggg")
     try {
       const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/documents/project/${projectId}`);
-      console.log("res",res.data);
+      // console.log("res",res.data);
       setDocuments(res.data);
       return true;
     } catch (error) {

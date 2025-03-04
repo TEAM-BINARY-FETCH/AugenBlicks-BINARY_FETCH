@@ -190,7 +190,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                                   className="w-full h-full"
                                   onClick={async () => {
                                     await deleteDocument(doc._id);
-                                    getDocuments(activeProject);
+                                    // getDocuments(activeProject);
                                   }}
                                   variant="destructive"
                                 >

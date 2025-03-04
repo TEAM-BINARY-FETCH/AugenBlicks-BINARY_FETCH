@@ -92,6 +92,7 @@ export const getProjectsByUser = async (req, res) => {
     const { userId } = req.params;
 
     // Find projects where the user is a member
+    // console.log("userid", userId);
     const projects = await Project.find({ members: userId });
 
     // Get all documents for the user's projects

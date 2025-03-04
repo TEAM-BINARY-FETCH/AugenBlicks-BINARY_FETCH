@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useSocketContext } from "./SocketContext";
 import { useAuthContext } from "./AuthContext";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 export const ProjectContext = createContext(); 
 export const useProjectContext = () => {
@@ -39,20 +40,43 @@ export const ProjectContextProvider = ({children}) => {
     fetchProjects();
   }, [authToken, socket]);
 
-  useEffect(() => { 
-    if(socket){
-      console.log("Joining project room", currentProject?._id);
-      socket.emit("projectJoin", {projectId: currentProject?._id, userId: authUser._id,socketId:socket.id});
-      
-      socket.on("projectJoined", ({userId,clients,socketId,username}) => {
-        console.log("online users",clients);
-        console.log(username)
-        setOnlineUsers(clients);
+  useEffect(() => {
+    console.log("emmitting project join");
+    if (!socket || !currentProject?._id || !authUser?._id) return;
+  
+    console.log("Joining project room:", currentProject._id);
+  
+    socket.emit("projectJoin", {
+      projectId: currentProject._id,
+      userId: authUser._id,
+      socketId: socket.id,
+      name: authUser.name,
+    });
+  
+    const handleProjectJoined = ({ clients,name ,userId}) => {
+      setOnlineUsers(clients);
+      // console.log("Online users:", clients);
+      if(userId === authUser._id) return;
+      toast.success(`${name} joined the project`);
+    };
+  
+    // Listen for projectJoined event
+    socket.on("projectJoined", handleProjectJoined);
+  
+    // Cleanup: Leave room & remove listener when unmounting or project changes
+    return () => {
+      console.log("Leaving project room:", currentProject._id);
+      socket.emit("projectLeave", {
+        projectId: currentProject._id,
+        userId: authUser._id,
       });
-    }
-
-
-  }, [currentProject]);
+  
+      socket.off("projectJoined", handleProjectJoined);
+    };
+  
+  }, [currentProject?._id, authUser?._id, socket]);
+  
+  
 
   
   return <ProjectContext.Provider value={{projects,setProjects,projectLoading, setProjectLoading,documents,setDocuments,currentDocument,setCurrentDocument,currentProject,setCurrentProject,onlineUsers,setOnlineUsers,content, setContent}} >

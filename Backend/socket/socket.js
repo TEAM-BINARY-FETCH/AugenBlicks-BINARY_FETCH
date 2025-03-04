@@ -18,11 +18,12 @@ io.on("connection", (socket) => {
   // console.log("a user connected", socket.id,userId);
   userSocketMap[socket.id] = userId;
 
-  socket.on("projectJoin", async ({ projectId, socketId, userId }) => {
+  socket.on("projectJoin", async ({ projectId, socketId, userId,name }) => {
     console.log("user joined", socketId, projectId, userId);
     socket.join(projectId);
     const users = await User.find();
-    console.log("users : ", users);
+    // console.log("users : ", users);
+    // console.log("userSocketMap : ", userSocketMap);
     const clients = Array.from(io.sockets.adapter.rooms.get(projectId)).map(
       (socketId) => {
         return {
@@ -34,13 +35,14 @@ io.on("connection", (socket) => {
         };
       }
     );
-    // console.log("clients : ",clients);
+    console.log("clients : ",clients);
 
     clients.forEach((client) => {
       io.to(client.socketId).emit("projectJoined", {
         userId,
         clients,
         socketId: client.socketId,
+        name,
       });
     });
   });

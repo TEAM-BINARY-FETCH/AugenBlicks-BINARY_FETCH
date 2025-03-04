@@ -7,7 +7,7 @@ export const createDocument = async (req, res) => {
     const { projectId, title } = req.body;
 
     // Check if project exists
-    console.log("projectId in create document",projectId);
+    // console.log("projectId in create document",projectId);
     const project = await Project.findById(projectId);
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
@@ -89,7 +89,7 @@ export const getDocumentsByProject = async (req, res) => {
   try {
     const { projectId } = req.params;
     const documents = await Document.find({ project: projectId });
-    console.log("documents",documents);
+    // console.log("documents",documents);
     res.json(documents);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });

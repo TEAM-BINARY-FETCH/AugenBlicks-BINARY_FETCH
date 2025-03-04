@@ -5,7 +5,6 @@ import { ContactUs } from "./pages/ContactUs";
 import { AboutUs } from "./pages/AboutUs";
 import { Signup } from "./pages/Signup";
 import { Login } from "./pages/Login";
-import Profile from "./pages/Profile";
 import { Toaster } from "react-hot-toast";
 import { AuthContextProvider } from "./context/AuthContext";
 
@@ -15,6 +14,7 @@ import EditorPage from "./pages/EditorPage";
 import ProjectsPage from "./pages/ProjectsPage";
 import { SocketContextProvider } from "./context/SocketContext";
 import { ProjectContextProvider } from "./context/ProjectContext";
+import Setting from "./pages/Setting";
 
 function App() {
   return (
@@ -31,7 +31,7 @@ function App() {
               <Route path="/projects" element={<ProjectsPage />} />
               <Route path="/projects/:projectId" element={<EditorPage />} />
               <Route path="/projects/:projectId/documents/:docId" element={<EditorPage />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/setting" element={<Setting />} />
               
             </Route>
             <Route path="/signup" element={<Signup />} />

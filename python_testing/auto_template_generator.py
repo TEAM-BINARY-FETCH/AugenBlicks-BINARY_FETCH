@@ -53,6 +53,8 @@ AI_template_generation_template = PromptTemplate(
     </html>
 
     please remove ```html and ``` from the start and end of the code block
+    It would be great if you could embed the related images also from https://unsplash.com/ 
+    Make sure the image link is correct and the image is related to the content
     """,
     input_variables=['user_input']  
 )

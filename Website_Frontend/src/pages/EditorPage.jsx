@@ -165,7 +165,6 @@ export default function App() {
             "advcode",
             "editimage",
             "advtemplate",
-            "ai",
             "mentions",
             "tinycomments",
             "tableofcontents",

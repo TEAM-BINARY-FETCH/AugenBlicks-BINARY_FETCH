@@ -13,17 +13,18 @@ export const io = new Server(server, {
 });
 
 const userSocketMap = {};
+
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
-  // console.log("a user connected", socket.id,userId);
+  console.log("User connected:", socket.id, userId);
   userSocketMap[socket.id] = userId;
 
-  socket.on("projectJoin", async ({ projectId, socketId, userId,name }) => {
-    console.log("user joined", socketId, projectId, userId);
+  // Handle project join event
+  socket.on("projectJoin", async ({ projectId, socketId, userId, name }) => {
+    console.log("User joined project:", projectId, userId);
     socket.join(projectId);
+
     const users = await User.find();
-    // console.log("userSocketMap : ", userSocketMap);
-    // console.log("users : ", users);
     const clients = Array.from(io.sockets.adapter.rooms.get(projectId)).map(
       (socketId) => {
         return {
@@ -35,8 +36,8 @@ io.on("connection", (socket) => {
         };
       }
     );
-    console.log("clients : ",clients);
 
+    // Notify all clients in the project room
     clients.forEach((client) => {
       io.to(client.socketId).emit("projectJoined", {
         userId,
@@ -47,21 +48,15 @@ io.on("connection", (socket) => {
     });
   });
 
+  // Handle content change event
   socket.on("contentChange", ({ text, doc, project, userId }) => {
-    // console.log("content change", content);
-    // console.log("currentDocument",currentDocument);
-    // console.log("currentProject",currentProject);
-    console.log("content changed ", text);
-
-    io.to(project?._id).emit("onchangefromOther", {
-      text,
-      doc,
-      project,
-      userId,
-    });
+    console.log("Content changed:", text);
+    io.to(project._id).emit("onchangefromOther", { text, doc, project, userId });
   });
 
+  // Handle user disconnect
   socket.on("disconnect", () => {
-    console.log("user disconnected", socket.id);
+    console.log("User disconnected:", socket.id);
+    delete userSocketMap[socket.id];
   });
 });

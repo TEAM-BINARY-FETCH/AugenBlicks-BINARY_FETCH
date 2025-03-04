@@ -30,6 +30,7 @@ export default function App() {
   const [ModalOpen, setModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const editorRef = useRef(null);
+  useSyncChange(editorRef);
   const [editorContent, setEditorContent] = useState("");
   const [suggestedText, setSuggestedText] = useState("");
   const [suggestionPosition, setSuggestionPosition] = useState({

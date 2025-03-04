@@ -149,22 +149,6 @@ export const getVersion = async (req, res) => {
 }
 
 
-export const getVersion = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const versions = await VersionHistory.find({ document: id }).populate("userId");
-
-    if (!versions) {
-      return res.status(404).json({ message: "Versions not found" });
-    }
-
-    res.json(versions);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error });
-  }
-}
-
-
 export const updateViews =async (req,res) => {
   try{
     const {id} = req.params;

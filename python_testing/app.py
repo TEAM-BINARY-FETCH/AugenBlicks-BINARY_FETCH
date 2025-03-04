@@ -3,6 +3,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from auto_suggestion import get_auto_suggestion
 from ai_helper import get_ai_response
+from auto_template_generator import get_ai_generated_template
 
 import os
 
@@ -40,6 +41,18 @@ def ai_helper():
         suggestion = get_ai_response(task_type, text_input, style_input, user_query)
 
         return jsonify({"suggestion": suggestion})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/ai-template-generation', methods=['POST'])
+def ai_template_generation():
+    try:
+        user_input = request.json.get('user_input', '')
+        print("User input: ", user_input)
+        template = get_ai_generated_template(user_input)
+
+        return jsonify({"template": template})
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

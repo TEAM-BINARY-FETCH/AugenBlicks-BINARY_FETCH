@@ -13,11 +13,15 @@ import { ScriptContextProvider } from "./context/ScriptContext";
 import Dashboard from "./pages/Dashboard";
 import EditorPage from "./pages/EditorPage";
 import ProjectsPage from "./pages/ProjectsPage";
+import { SocketContextProvider } from "./context/SocketContext";
+import { ProjectContextProvider } from "./context/ProjectContext";
 
 function App() {
   return (
     <>
       <AuthContextProvider>
+        <SocketContextProvider>
+          <ProjectContextProvider>
         <ScriptContextProvider>
           <Routes>
             <Route path="/" element={<HomeLayout />}>
@@ -26,7 +30,9 @@ function App() {
               <Route path="/contact" element={<ContactUs />} />
               <Route path="/projects" element={<ProjectsPage />} />
               <Route path="/projects/:projectId" element={<EditorPage />} />
+              <Route path="/projects/:projectId/documents/:docId" element={<EditorPage />} />
               <Route path="/profile" element={<Profile />} />
+              
             </Route>
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
@@ -34,6 +40,8 @@ function App() {
 
           <Toaster />
         </ScriptContextProvider>
+        </ProjectContextProvider>
+        </SocketContextProvider>
       </AuthContextProvider>
     </>
   );

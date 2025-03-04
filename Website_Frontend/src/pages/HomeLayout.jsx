@@ -1,20 +1,22 @@
+import { useState } from "react";
 import { Outlet } from "react-router";
-import { Navbar } from "../components/Navbar";
-import { Footer } from "../components/Footer";
 import Sidebar from "../components/Sidebar";
 
 export const HomeLayout = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
   return (
-    <>
-      {/* <Navbar /> */}
-      <div className="flex h-screen">
-        <Sidebar />
-        <div className="page-container ml-72 w-full overflow-y-auto">
-          <Outlet />
-        </div>
+    <div className="flex h-screen bg-gray-800 text-white">
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+      <div
+        className={`transition-all p-4 ${
+          isSidebarOpen
+            ? "ml-64 w-[calc(100%-16rem)]"
+            : "ml-16 w-[calc(100%-4rem)]"
+        }`}
+      >
+        <Outlet />
       </div>
-      {/* <Footer /> */}
-    </>
+    </div>
   );
 };
-

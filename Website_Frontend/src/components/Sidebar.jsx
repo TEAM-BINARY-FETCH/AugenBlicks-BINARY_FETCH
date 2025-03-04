@@ -7,6 +7,7 @@ import { BiTrash } from "react-icons/bi";
 import { HiOutlineTemplate } from "react-icons/hi";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
+import logo from '/logo.png';
 
 const sidebarVariants = {
   hidden: { x: -250, opacity: 0 },
@@ -32,7 +33,8 @@ export default function Sidebar() {
         initial="hidden"
         animate={isOpen ? "visible" : "hidden"}
       >
-        <h2 className="text-xl font-bold mb-4">Notion Sidebar</h2>
+        {/* <h2 className="text-xl font-bold mb-4">Notion Sidebar</h2> */}
+        <img src={logo} className="mx-auto mb-3 h-16 w-48 rounded-sm object-cover"/>
         
         {/* Search */}
         <div className="mb-4 flex items-center bg-gray-800 p-2 rounded">

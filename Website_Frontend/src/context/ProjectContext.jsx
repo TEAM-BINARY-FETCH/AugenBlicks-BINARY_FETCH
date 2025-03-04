@@ -12,6 +12,10 @@ export const ProjectContextProvider = ({children}) => {
   const [projectLoading, setProjectLoading] = useState(true);
   const [documents,setDocuments] = useState([]);
   const {authUser,authToken} = useAuthContext();
+  const [currentProject,setCurrentProject] = useState(null);
+  const [currentDocument,setCurrentDocument] = useState(null);
+  const [onlineUsers,setOnlineUsers] = useState([]);
+  const [content, setContent] = useState("");
   const {socket} = useSocketContext();
   
   useEffect(() => {
@@ -23,8 +27,9 @@ export const ProjectContextProvider = ({children}) => {
           },
         });
         const data = response.data
-        console.log("projects", data)
-        setProjects(data);
+        // console.log("projects", data)
+        setDocuments(data.documents)
+        setProjects(data.projects);
       } catch (error) {
         console.error(error);
       }finally{
@@ -33,8 +38,24 @@ export const ProjectContextProvider = ({children}) => {
     };
     fetchProjects();
   }, [authToken, socket]);
+
+  useEffect(() => { 
+    if(socket){
+      console.log("Joining project room", currentProject?._id);
+      socket.emit("projectJoin", {projectId: currentProject?._id, userId: authUser._id,socketId:socket.id});
+      
+      socket.on("projectJoined", ({userId,clients,socketId,username}) => {
+        console.log("online users",clients);
+        console.log(username)
+        setOnlineUsers(clients);
+      });
+    }
+
+
+  }, [currentProject]);
+
   
-  return <ProjectContext.Provider value={{projects,setProjects,projectLoading, setProjectLoading,documents,setDocuments}}>
+  return <ProjectContext.Provider value={{projects,setProjects,projectLoading, setProjectLoading,documents,setDocuments,currentDocument,setCurrentDocument,currentProject,setCurrentProject,onlineUsers,setOnlineUsers,content, setContent}} >
     {children}
     </ProjectContext.Provider>;
 }

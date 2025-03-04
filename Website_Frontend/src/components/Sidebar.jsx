@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   FiPlus,
@@ -17,18 +17,20 @@ import useAddDocument from "../hooks/useAddDocument";
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const [activeProject, setActiveProject] = useState(null);
-  const { projects } = useProjectContext();
-  const { loading, documents, getDocuments } = useGetDocument();
+  const { projects, setCurrentDocument, setCurrentProject ,documents} =
+    useProjectContext();
   const { addDocument } = useAddDocument();
+  const navigate = useNavigate();
 
   const toggleProject = (projectId) => {
     if (activeProject === projectId) {
       setActiveProject(null);
     } else {
       setActiveProject(projectId);
-      getDocuments(projectId);
     }
   };
+  // console.log("documents in sidebar",documents)
+  // console.log("projects in sidebar",projects)
 
   return (
     <div className="relative">
@@ -48,7 +50,11 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
         {/* Scrollable Sidebar Content */}
         <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
-          <div className={`p-4 transition-all ${isOpen ? "opacity-100" : "opacity-0 hidden"}`}>
+          <div
+            className={`p-4 transition-all ${
+              isOpen ? "opacity-100" : "opacity-0 hidden"
+            }`}
+          >
             <h2 className="text-xl font-bold mb-4 mt-4">Notion Sidebar</h2>
 
             {/* Search */}
@@ -64,10 +70,17 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             {/* Navigation */}
             <ul className="space-y-3">
               <li>
-                <Link to="/" className="block p-3 rounded hover:bg-gray-700">Home</Link>
+                <Link to="/" className="block p-3 rounded hover:bg-gray-700">
+                  Home
+                </Link>
               </li>
               <li>
-                <Link to="/favorites" className="block p-3 rounded hover:bg-gray-700">Favorites</Link>
+                <Link
+                  to="/favorites"
+                  className="block p-3 rounded hover:bg-gray-700"
+                >
+                  Favorites
+                </Link>
               </li>
 
               {/* Projects & Documents Dropdown */}
@@ -76,7 +89,11 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                 <div key={project._id}>
                   <div
                     className="p-3 rounded hover:bg-gray-700 cursor-pointer flex items-center justify-between"
-                    onClick={() => toggleProject(project._id)}
+                    onClick={() => {
+                      toggleProject(project._id);
+                      setCurrentProject(project);
+                      // getDocuments(project._id);
+                    }}
                   >
                     <span>{project.title}</span>
                     <div className="flex gap-2">
@@ -88,26 +105,39 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                           addDocument({ projectId: project._id });
                         }}
                       />
-                      {activeProject === project._id ? <FiChevronDown /> : <FiChevronRight />}
+                      {activeProject === project._id ? (
+                        <FiChevronDown />
+                      ) : (
+                        <FiChevronRight />
+                      )}
                     </div>
                   </div>
 
                   {/* Nested Documents */}
                   {activeProject === project._id && (
                     <ul className="pl-6 space-y-2">
-                      {documents?.length > 0 ? (
-                        documents?.map((doc) => (
-                          <li key={doc._id}>
-                            <Link
-                              to={`/projects/${project._id}/documents/${doc._id}`}
-                              className="block p-2 rounded hover:bg-gray-700"
+                      {documents?.filter((doc) => doc.project === project._id)
+                        .length > 0 ? (
+                        documents
+                          .filter((doc) => doc.project === project._id)
+                          .map((doc) => (
+                            <li
+                              key={doc._id}
+                              onClick={() => {
+                                setCurrentDocument(doc);
+                                navigate(
+                                  `/projects/${project._id}/documents/${doc._id}`
+                                );
+                              }}
+                              className="cursor-pointer hover:text-white"
                             >
                               {doc.title}
-                            </Link>
-                          </li>
-                        ))
+                            </li>
+                          ))
                       ) : (
-                        <li className="text-gray-400 text-sm pl-2">No documents yet</li>
+                        <li className="text-gray-400 text-sm pl-2">
+                          No documents yet
+                        </li>
                       )}
                     </ul>
                   )}
@@ -115,7 +145,10 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               ))}
 
               <li>
-                <Link to="/trash" className="p-3 rounded hover:bg-gray-700 flex items-center gap-2">
+                <Link
+                  to="/trash"
+                  className="p-3 rounded hover:bg-gray-700 flex items-center gap-2"
+                >
                   <BiTrash /> Trash
                 </Link>
               </li>
@@ -130,12 +163,18 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             <div className="mt-6 border-t border-gray-700 pt-4">
               <ul className="space-y-3">
                 <li>
-                  <Link to="/settings" className="p-3 rounded hover:bg-gray-700 flex items-center gap-2">
+                  <Link
+                    to="/settings"
+                    className="p-3 rounded hover:bg-gray-700 flex items-center gap-2"
+                  >
                     <AiOutlineSetting /> Settings
                   </Link>
                 </li>
                 <li>
-                  <Link to="/templates" className="p-3 rounded hover:bg-gray-700 flex items-center gap-2">
+                  <Link
+                    to="/templates"
+                    className="p-3 rounded hover:bg-gray-700 flex items-center gap-2"
+                  >
                     <HiOutlineTemplate /> Templates
                   </Link>
                 </li>

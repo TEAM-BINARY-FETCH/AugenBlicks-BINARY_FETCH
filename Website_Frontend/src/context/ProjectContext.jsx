@@ -27,7 +27,7 @@ export const ProjectContextProvider = ({children}) => {
           },
         });
         const data = response.data
-        // console.log("projects", data)
+        console.log("projects", data)
         setDocuments(data.documents)
         setProjects(data.projects);
       } catch (error) {

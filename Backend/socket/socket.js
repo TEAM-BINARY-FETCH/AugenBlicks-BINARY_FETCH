@@ -15,14 +15,15 @@ export const io = new Server(server, {
 const userSocketMap = {};
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
-  // console.log("a user connected", socket.id,userId);
+  // console.log('socket connected', socket.handshake);
+  console.log("a user connected", socket.id,userId);
   userSocketMap[socket.id] = userId;
 
   socket.on("projectJoin", async ({ projectId, socketId, userId }) => {
     console.log("user joined", socketId, projectId, userId);
     socket.join(projectId);
     const users = await User.find();
-    console.log("users : ", users);
+    // console.log("users : ", users);
     const clients = Array.from(io.sockets.adapter.rooms.get(projectId)).map(
       (socketId) => {
         return {
@@ -41,6 +42,8 @@ io.on("connection", (socket) => {
         userId,
         clients,
         socketId: client.socketId,
+        username:
+          users.find((user) => user._id == userId)?.name || "Unknown",
       });
     });
   });

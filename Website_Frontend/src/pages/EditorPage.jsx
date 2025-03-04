@@ -8,8 +8,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import {customTemplates} from "./../utils/customTemplates";
+} from "@/components/ui/select";
+import { customTemplates } from "./../utils/customTemplates";
 import AIGenerateModal from "../components/AIGenerateModal.jsx";
 import useAITemplate from "../hooks/useAITemplate";
 import { useSocketContext } from "../context/SocketContext.jsx";
@@ -21,20 +21,21 @@ import { FiUserPlus, FiX } from "react-icons/fi";
 import { motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 
-
-
-
 export default function App() {
-  const {socket} = useSocketContext();
-  const {currentProject,currentDocument,setContent,documents} = useProjectContext();
+  const { socket } = useSocketContext();
+  const { currentProject, currentDocument, setContent, documents } =
+    useProjectContext();
   const [ModalOpen, setModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState("");
-
-  useSyncChange();
-  const [editorContent, setEditorContent] = useState("");
   const editorRef = useRef(null);
+
+  useSyncChange(editorRef);
+  const [editorContent, setEditorContent] = useState("");
   const [suggestedText, setSuggestedText] = useState("");
-  const [suggestionPosition, setSuggestionPosition] = useState({ top: 0, left: 0 });
+  const [suggestionPosition, setSuggestionPosition] = useState({
+    top: 0,
+    left: 0,
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { generateAIContent } = useAITemplate();
 
@@ -44,6 +45,7 @@ export default function App() {
 
   const handleEditorChange = (content) => {
     setEditorContent(content);
+    setContent(content);
   };
 
   const fetchSuggestion = async (content) => {
@@ -52,19 +54,19 @@ export default function App() {
     // Mock suggestion
     const suggestion = "Hello, how can I help you?";
     setSuggestedText(suggestion); // Set the AI suggestion
-    console.log('Suggestion:', suggestion);
+    console.log("Suggestion:", suggestion);
   };
 
   const acceptSuggestion = () => {
     if (!suggestedText || !editorRef.current) return;
-    editorRef.current.insertContent(suggestedText); 
-    setSuggestedText(""); // Clear the suggestion 
+    editorRef.current.insertContent(suggestedText);
+    setSuggestedText(""); // Clear the suggestion
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      console.log('Fetching suggestion...');
-      fetchSuggestion(editorContent); 
+      console.log("Fetching suggestion...");
+      fetchSuggestion(editorContent);
     }, 1000); // Fetch suggestion after 3 seconds of inactivity
     return () => clearTimeout(timer);
   }, [editorContent]);
@@ -95,7 +97,7 @@ export default function App() {
     const cursorPosition = editor.selection.getRng().getClientRects()[0];
     if (cursorPosition) {
       setSuggestionPosition({
-        top: cursorPosition.top + window.scrollY + 20, 
+        top: cursorPosition.top + window.scrollY + 20,
         left: cursorPosition.left + window.scrollX,
       });
     }
@@ -107,7 +109,6 @@ export default function App() {
     }
   };
 
-
   const handleAIGenerate = async (prompt) => {
     const aiContent = await generateAIContent(prompt); // Replace with your AI content generation logic
     if (aiContent && editorRef.current) {
@@ -116,7 +117,6 @@ export default function App() {
       alert("Failed to generate content. Please try again.");
     }
   };
-
 
   const handleAddUser = async () => {
     if (!userEmail.trim()) {
@@ -185,9 +185,10 @@ export default function App() {
       </div>
       {/* TinyMCE Editor */}
       <Editor
-      className="z-0"
+        className="z-0"
         apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
         onInit={handleEditorInit}
+        value={editorContent}
         onEditorChange={handleEditorChange}
         init={{
           plugins: [
@@ -293,11 +294,9 @@ export default function App() {
         }}
         initialValue="Welcome to TinyMCE!"
       />
-      
-      
 
       <AIGenerateModal
-      className="w-[400px]"
+        className="w-[400px]"
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
         onSubmit={handleAIGenerate}
@@ -322,7 +321,7 @@ export default function App() {
         </div>
       )} */}
 
-{ModalOpen && (
+      {ModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -362,7 +361,6 @@ export default function App() {
         </div>
       )}
 
-
       {/* AI Chat Button */}
       <AIChatBot
         editorContent={editorRef.current ? editorRef.current.getContent() : ""}
@@ -370,12 +368,3 @@ export default function App() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-

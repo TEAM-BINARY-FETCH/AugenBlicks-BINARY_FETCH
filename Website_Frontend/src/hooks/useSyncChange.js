@@ -1,18 +1,17 @@
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import { useSocketContext } from "../context/SocketContext";
 import { useProjectContext } from "../context/ProjectContext";
 import { useAuthContext } from "../context/AuthContext";
 
-const useSyncChange = () => {
+const useSyncChange = (editorRef) => {
   const { socket } = useSocketContext();
-  const { content, setContent, currentDocument, currentProject, documents ,setDocuments} =
+  const { content, setContent, currentDocument, currentProject, documents, setDocuments } =
     useProjectContext();
   const { authUser } = useAuthContext();
-  console.log("documents  in sync change",documents);
 
+  // Emit content changes to the server
   useEffect(() => {
-    console.log("editor content in sync change", content, typeof content);
-    if (socket) {
+    if (socket && currentDocument && currentProject) {
       socket.emit("contentChange", {
         text: content,
         doc: currentDocument,
@@ -20,32 +19,43 @@ const useSyncChange = () => {
         userId: authUser._id,
       });
     }
-  }, [content]);
+  }, [content, socket, currentDocument, currentProject, authUser]);
 
+  // Listen for content changes from other users
   useEffect(() => {
     if (socket) {
       socket.on("onchangefromOther", ({ text, doc, project, userId }) => {
-        if (userId === authUser._id) {
-          return;
+        if (userId === authUser._id) return; // Ignore changes from the current user
+
+        // Update the document content in the state
+        setDocuments((prevDocuments) =>
+          prevDocuments.map((document) =>
+            document._id === doc._id ? { ...document, content: text } : document
+          )
+        );
+
+        // Update the editor content if the current document is the one being edited
+        if (currentDocument?._id === doc._id && editorRef.current) {
+          const currentEditorContent = editorRef.current.getContent(); // Get current editor content
+
+          // Only update if the incoming content is different
+          if (currentEditorContent !== text) {
+            const cursorPosition = editorRef.current.selection.getBookmark(); // Save cursor position
+            editorRef.current.setContent(text); // Update the editor content
+            editorRef.current.selection.moveToBookmark(cursorPosition); // Restore cursor position
+            setContent(text); // Update the global content state
+          }
         }
-          setDocuments((prevDocuments) =>
-            prevDocuments.map((document) =>{
-              console.log("content in map",content);
-              console.log("text in map",text);
-              return document._id === doc._id ? { ...document,content:content+text} : document
-
-            }
-            )
-          );
-        
-        // console.log("newDoc in syncchange ",updateDocumentContent );
-
-        console.log("on change form other ", text);
-
-        // console.log("content change from other", content);
       });
     }
-  }, []);
+
+    // Cleanup the socket listener
+    return () => {
+      if (socket) {
+        socket.off("onchangefromOther");
+      }
+    };
+  }, [socket, authUser, currentDocument, setDocuments, setContent, editorRef]);
 
   return {};
 };

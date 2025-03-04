@@ -17,7 +17,8 @@ export const ProjectContextProvider = ({children}) => {
   const [onlineUsers,setOnlineUsers] = useState([]);
   const [content, setContent] = useState("");
   const {socket} = useSocketContext();
-  
+
+
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -27,7 +28,7 @@ export const ProjectContextProvider = ({children}) => {
           },
         });
         const data = response.data
-        // console.log("projects", data)
+        console.log("projects", data)
         setDocuments(data.documents)
         setProjects(data.projects);
       } catch (error) {

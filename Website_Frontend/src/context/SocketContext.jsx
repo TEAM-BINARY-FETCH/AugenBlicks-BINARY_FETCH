@@ -14,9 +14,9 @@ export const SocketContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (authUser) {
-      const newSocket = io(import.meta.env.VITE_BACKEND_URL, {
-        auth: {
-          token: authUser.token,
+      const newSocket = io(`${import.meta.env.VITE_BACKEND_URL}`, {
+        query: {
+          userId: "67c73358d006c41a7379cfa7" || authUser?._id,
         },
       });
       newSocket.on("connect", () => {

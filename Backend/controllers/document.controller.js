@@ -89,7 +89,7 @@ export const getDocumentsByProject = async (req, res) => {
   try {
     const { projectId } = req.params;
     const documents = await Document.find({ project: projectId });
-    console.log("documents",documents);
+    // console.log("documents",documents);
     res.json(documents);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });

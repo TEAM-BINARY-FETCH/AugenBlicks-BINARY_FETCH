@@ -8,7 +8,7 @@ load_dotenv()
 model = ChatGoogleGenerativeAI(
     model='gemini-1.5-pro',
     temperature=1.0,
-    max_tokens=150,
+    # max_tokens=,
     timeout=None,
     max_retries=2
 )

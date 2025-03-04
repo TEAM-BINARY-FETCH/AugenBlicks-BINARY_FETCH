@@ -2,6 +2,7 @@ import Document from "../models/document.model.js";
 import Project from "../models/project.model.js";
 import VersionHistory from "../models/versionHistory.model.js";
 
+
 export const createDocument = async (req, res) => {
   try {
     const { projectId, title } = req.body;
@@ -44,6 +45,7 @@ export const getDocumentById = async (req, res) => {
  * Update a document's content
  */
 
+
 export const updateDocument = async (req, res) => {
   try {
     const { id } = req.params;
@@ -74,7 +76,6 @@ export const updateDocument = async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 };
-
 
 /**
  * Delete a document
@@ -128,6 +129,22 @@ export const renameDocument = async (req, res) => {
   }
   catch(error){
     res.status(500).json({ message: "Error in Rename Document Controller", error });
+  }
+}
+
+
+export const getVersion = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const versions = await VersionHistory.find({ document: id }).populate("userId");
+
+    if (!versions) {
+      return res.status(404).json({ message: "Versions not found" });
+    }
+
+    res.json(versions);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
   }
 }
 

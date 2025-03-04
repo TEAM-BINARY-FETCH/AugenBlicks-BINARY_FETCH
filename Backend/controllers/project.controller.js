@@ -143,7 +143,7 @@ export const getFavoriteProjects = async (req, res) => {
   const {userId} = req.user;
   try {
     const user = await User.findById(userId).populate("favouriteProjects"); 
-    res.json(user.favouriteProjects);
+    res.json(user?.favouriteProjects || []);
   } catch (error) {
     console.error("Error fetching favorite projects:", error);
     res.status(500).json({ message: "Server error in getFavoriteProjects controller", error

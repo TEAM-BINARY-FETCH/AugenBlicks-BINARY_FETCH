@@ -8,7 +8,7 @@ export const createDocument = async (req, res) => {
     const { projectId, title } = req.body;
 
     // Check if project exists
-    console.log("projectId in create document",projectId);
+    // console.log("projectId in create document",projectId);
     const project = await Project.findById(projectId);
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
@@ -76,6 +76,7 @@ export const updateDocument = async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 };
+
 /**
  * Delete a document
  */
@@ -128,6 +129,38 @@ export const renameDocument = async (req, res) => {
   }
   catch(error){
     res.status(500).json({ message: "Error in Rename Document Controller", error });
+  }
+}
+
+
+export const getVersion = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const versions = await VersionHistory.find({ document: id }).populate("userId");
+
+    if (!versions) {
+      return res.status(404).json({ message: "Versions not found" });
+    }
+
+    res.json(versions);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+}
+
+
+export const getVersion = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const versions = await VersionHistory.find({ document: id }).populate("userId");
+
+    if (!versions) {
+      return res.status(404).json({ message: "Versions not found" });
+    }
+
+    res.json(versions);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
   }
 }
 

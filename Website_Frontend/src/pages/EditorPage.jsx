@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import AIChatBot from "../components/AIChatBot";
 import { specialChars } from "./../utils/specialChars.js";
@@ -21,6 +21,7 @@ import { FiUserPlus, FiX, FiSave } from "react-icons/fi";
 import { motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import { useAuthContext } from "../context/AuthContext.jsx";
+import useGetVersion from "../hooks/useGetVersion";
 
 export default function App() {
   const { socket } = useSocketContext();
@@ -40,12 +41,13 @@ export default function App() {
   const [savedContent, setSavedContent] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const { generateAIContent } = useAITemplate();
-  const {authUser} = useAuthContext();
+  const { authUser } = useAuthContext();
+  const { versionLoading, versions, getVersion,setVersions } = useGetVersion();
 
   // Fetch saved content when the component mounts or the document changes
   useEffect(() => {
     const fetchSavedContent = async () => {
-      console.log('currentDocument',currentDocument);
+      console.log("currentDocument", currentDocument);
       if (!currentDocument?._id) return;
       setEditorContent(currentDocument.content);
       setSavedContent(currentDocument.content);
@@ -125,9 +127,18 @@ export default function App() {
     }
   }, [suggestedText]);
 
+  useEffect(() => {
+    getVersion();
+  }, [currentDocument, currentProject]);
+
   const handleTemplateSelect = (templateContent) => {
     if (editorRef.current) {
       editorRef.current.setContent(templateContent);
+    }
+  };
+  const handleVersionSelect = (versionContent) => {
+    if (editorRef.current) {
+      editorRef.current.setContent(versionContent);
     }
   };
 
@@ -165,18 +176,22 @@ export default function App() {
 
   // Save button handler
   const handleSave = async () => {
+    
     if (editorRef.current) {
       const content = editorRef.current.getContent();
-      setSavedContent(content); // Save the content
+      setSavedContent(content);
       try {
         await axios.put(
-          `${import.meta.env.VITE_BACKEND_URL}/api/documents/${currentDocument._id}`,
-          {
-            content,
-            userId: authUser._id,
-          }
-        );
-        toast.success("Content saved successfully!");
+          `${import.meta.env.VITE_BACKEND_URL}/api/documents/${
+            currentDocument._id
+            }`,
+            {
+              content,
+              userId: authUser._id,
+            }
+          );
+          toast.success("Content saved successfully!");
+          getVersion();
       } catch (error) {
         console.log("Error saving content:", error);
         toast.error("Failed to save content");
@@ -187,7 +202,7 @@ export default function App() {
   return (
     <div className="">
       <div className="flex justify-between items-center p-4 bg-gray-800 text-white">
-        <h1>Document</h1>
+        <h1>{currentDocument?.title || "Document"}</h1>
         <div className="flex items-center gap-4">
           <OnlineUsers />
           <button
@@ -206,30 +221,58 @@ export default function App() {
           </button>
         </div>
       </div>
-      <div className="mb-2 flex items-center gap-x-2">
-        <label htmlFor="template-select">Choose a Template: </label>
-        <Select
-          id="template-select"
-          onValueChange={(value) => {
-            const selectedTemplate = customTemplates.find(
-              (template) => template.title === value
-            );
-            if (selectedTemplate) {
-              handleTemplateSelect(selectedTemplate.content);
-            }
-          }}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select a template" />
-          </SelectTrigger>
-          <SelectContent>
-            {customTemplates.map((template, index) => (
-              <SelectItem key={index} value={template.title}>
-                {template.title}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="flex justify-between items-center pr-12">
+        <div className="mb-2 flex items-center gap-x-2">
+          <label htmlFor="template-select">Choose a Template: </label>
+          <Select
+            id="template-select"
+            onValueChange={(value) => {
+              const selectedTemplate = customTemplates.find(
+                (template) => template.title === value
+              );
+              if (selectedTemplate) {
+                handleTemplateSelect(selectedTemplate.content);
+              }
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select a template" />
+            </SelectTrigger>
+            <SelectContent>
+              {customTemplates.map((template, index) => (
+                <SelectItem key={index} value={template.title}>
+                  {template.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="mb-2 flex items-center gap-x-2">
+          <label htmlFor="template-select">Select Version</label>
+          <Select
+            id="version-select"
+            onValueChange={(value) => {
+              const selectedVersion = versions.find(
+                (version) => version?._id === value
+              );
+              if (selectedVersion) {
+                handleVersionSelect(selectedVersion.content);
+              }
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select version" />
+            </SelectTrigger>
+            <SelectContent>
+              {versions.length!=0 ?versions.map((version, index) => (
+                <SelectItem key={index} value={version?._id}>
+                  {version?.userId.name} -{" "}
+                  {new Date(version?.createdAt).toLocaleString()}
+                </SelectItem>
+              )): <SelectItem value="No versions found">No versions found</SelectItem>}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       {/* TinyMCE Editor */}
       {isLoading ? (

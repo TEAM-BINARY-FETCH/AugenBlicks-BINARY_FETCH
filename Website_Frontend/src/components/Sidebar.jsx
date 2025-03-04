@@ -197,7 +197,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                                   className="w-full h-full"
                                   onClick={async () => {
                                     await deleteDocument(doc._id);
-                                    getDocuments(activeProject);
+                                    // getDocuments(activeProject);
                                   }}
                                   variant="destructive"
                                 >
@@ -218,14 +218,14 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                 </div>
               ))}
 
-              <li>
+              {/* <li>
                 <Link
                   to="/trash"
                   className="p-3 rounded hover:bg-gray-700 flex items-center gap-2"
                 >
                   <BiTrash /> Trash
                 </Link>
-              </li>
+              </li> */}
             </ul>
 
             {/* Add New Page */}

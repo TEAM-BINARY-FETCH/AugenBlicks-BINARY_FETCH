@@ -32,8 +32,11 @@ export const SocketContextProvider = ({ children }) => {
         socket.close();
         setSocket(null);
       }
+      return;
     }
-  }, []);
+  
+  }, [authUser]);
+  
 
   return (
     <SocketContext.Provider value={{ socket }}>

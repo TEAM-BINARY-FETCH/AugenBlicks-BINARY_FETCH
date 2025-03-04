@@ -27,10 +27,10 @@ export default function App() {
     useProjectContext();
   const [ModalOpen, setModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState("");
-
-  useSyncChange();
-  const [editorContent, setEditorContent] = useState("");
   const editorRef = useRef(null);
+
+  useSyncChange(editorRef);
+  const [editorContent, setEditorContent] = useState("");
   const [suggestedText, setSuggestedText] = useState("");
   const [suggestionPosition, setSuggestionPosition] = useState({
     top: 0,
@@ -45,6 +45,7 @@ export default function App() {
 
   const handleEditorChange = (content) => {
     setEditorContent(content);
+    setContent(content);
   };
 
   const fetchSuggestion = async (content) => {
@@ -187,6 +188,7 @@ export default function App() {
         className="z-0"
         apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
         onInit={handleEditorInit}
+        value={editorContent}
         onEditorChange={handleEditorChange}
         init={{
           plugins: [

@@ -55,7 +55,7 @@ const useSyncChange = (editorRef) => {
         socket.off("onchangefromOther");
       }
     };
-  }, [socket, authUser, currentDocument, setDocuments, setContent, editorRef]);
+  }, [socket, currentDocument, editorRef]);
 
   return {};
 };

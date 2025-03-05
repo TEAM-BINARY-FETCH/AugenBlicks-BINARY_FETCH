@@ -38,7 +38,6 @@ export default function App() {
     left: 0,
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
   const [savedContent, setSavedContent] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const { generateAIContent } = useAITemplate();
@@ -253,28 +252,40 @@ export default function App() {
         <div className="mb-2 flex items-center gap-x-2">
           <label htmlFor="template-select">Select Version</label>
           <Select
-            id="version-select"
-            onValueChange={(value) => {
-              const selectedVersion = versions.find(
-                (version) => version?._id === value
-              );
-              if (selectedVersion) {
-                handleVersionSelect(selectedVersion.content);
-              }
-            }}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select version" />
-            </SelectTrigger>
-            <SelectContent>
-              {versions.length!=0 ?versions.map((version, index) => (
-                <SelectItem key={index} value={version?._id}>
-                  {version?.userId.name} -{" "}
-                  {new Date(version?.createdAt).toLocaleString()}
-                </SelectItem>
-              )): <SelectItem value="No versions found">No versions found</SelectItem>}
-            </SelectContent>
-          </Select>
+  id="version-select"
+  onValueChange={(value) => {
+    const selectedVersion = versions.find(
+      (version) => version?._id === value
+    );
+
+    if (selectedVersion) {
+      handleVersionSelect(selectedVersion.content);
+    }
+  }}
+>
+  {console.log("currentDocument :", currentDocument)}
+
+  <SelectTrigger className="w-[180px]">
+    <SelectValue placeholder="Select version" />
+  </SelectTrigger>
+
+  <SelectContent>
+  {/* Display versions if available */}
+  {versions.length !== 0 ? (
+    versions.map((version, index) => (
+      <SelectItem key={index} value={version?._id}>
+        {index === versions.length - 1
+          ? "Current" // Show "Current" for the last version
+          : `${version?.userId.name} - ${new Date(version?.createdAt).toLocaleString()}`}
+      </SelectItem>
+    ))
+  ) : (
+    <SelectItem value="no-versions">No versions found</SelectItem>
+  )}
+</SelectContent>
+
+</Select>
+
         </div>
       </div>
       {/* TinyMCE Editor */}
@@ -387,7 +398,7 @@ export default function App() {
               });
             },
           }}
-          initialValue={editorContent} // Set initial value to fetched content
+          initialValue={editorContent}
         />
       )}
 

@@ -84,7 +84,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               isOpen ? "opacity-100" : "opacity-0 hidden"
             }`}
           >
-            <h2 className="text-xl font-bold mb-4 mt-4">Notion Sidebar</h2>
+            <h2 className="text-2xl font-bold mb-4 mt-4 bg-gradient-to-b from-gray-400 via-gray-200 to-gray-600 bg-clip-text text-transparent">CoWorkrz</h2>
 
             {/* Search */}
             <div className="mb-4 flex items-center bg-gray-800 p-2 rounded">

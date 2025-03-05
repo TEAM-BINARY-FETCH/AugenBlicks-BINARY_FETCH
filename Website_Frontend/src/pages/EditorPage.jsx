@@ -26,7 +26,7 @@ import useGetVersion from "../hooks/useGetVersion";
 export default function App() {
   const { socket } = useSocketContext();
   const { currentProject, currentDocument, setContent, documents } =
-  useProjectContext();
+    useProjectContext();
   const [ModalOpen, setModalOpen] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const editorRef = useRef(null);
@@ -43,8 +43,8 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const { generateAIContent } = useAITemplate();
   const { authUser } = useAuthContext();
-  const { versionLoading, versions, getVersion,setVersions } = useGetVersion();
-  
+  const { versionLoading, versions, getVersion, setVersions } = useGetVersion();
+
   useSyncChange(editorRef);
 
   // Fetch saved content when the component mounts or the document changes
@@ -58,7 +58,11 @@ export default function App() {
 
     const updateViews = async () => {
       try {
-        const res = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/documents/update-views/${currentDocument._id}`);
+        const res = await axios.put(
+          `${import.meta.env.VITE_BACKEND_URL}/api/documents/update-views/${
+            currentDocument._id
+          }`
+        );
         console.log("Views updated:", res.data);
       } catch (error) {
         console.log("Error updating views:", error);
@@ -81,8 +85,20 @@ export default function App() {
   const fetchSuggestion = async (content) => {
     if (!content || content.length < 5) return; // Skip short content
     const suggestion = "Hello, how can I help you?";
-    setSuggestedText(suggestion);
-    console.log("Suggestion:", suggestion);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_FLASK_URL}/auto-suggestion`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: content }), 
+      });
+      const data = await response.json();
+      setSuggestedText(data.suggestion); 
+      console.log('Suggestion:', data.suggestion);
+    } catch (error) {
+      console.error("Error fetching suggestion:", error);
+    }
+    // setSuggestedText(suggestion);
+    // console.log("Suggestion:", suggestion);
   };
 
   const acceptSuggestion = () => {
@@ -179,7 +195,6 @@ export default function App() {
 
   // Save button handler
   const handleSave = async () => {
-    
     if (editorRef.current) {
       const content = editorRef.current.getContent();
       setSavedContent(content);
@@ -187,14 +202,14 @@ export default function App() {
         await axios.put(
           `${import.meta.env.VITE_BACKEND_URL}/api/documents/${
             currentDocument._id
-            }`,
-            {
-              content,
-              userId: authUser._id,
-            }
-          );
-          toast.success("Content saved successfully!");
-          getVersion();
+          }`,
+          {
+            content,
+            userId: authUser._id,
+          }
+        );
+        toast.success("Content saved successfully!");
+        getVersion();
       } catch (error) {
         console.log("Error saving content:", error);
         toast.error("Failed to save content");
@@ -267,12 +282,18 @@ export default function App() {
               <SelectValue placeholder="Select version" />
             </SelectTrigger>
             <SelectContent>
-              {versions.length!=0 ?versions.map((version, index) => (
-                <SelectItem key={index} value={version?._id}>
-                  {version?.userId.name} -{" "}
-                  {new Date(version?.createdAt).toLocaleString()}
+              {versions.length != 0 ? (
+                versions.map((version, index) => (
+                  <SelectItem key={index} value={version?._id}>
+                    {version?.userId.name} -{" "}
+                    {new Date(version?.createdAt).toLocaleString()}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem value="No versions found">
+                  No versions found
                 </SelectItem>
-              )): <SelectItem value="No versions found">No versions found</SelectItem>}
+              )}
             </SelectContent>
           </Select>
         </div>
@@ -391,7 +412,25 @@ export default function App() {
         />
       )}
 
-{ModalOpen && (
+      {suggestedText && (
+        <div
+          style={{
+            position: "absolute",
+            top: suggestionPosition.top,
+            left: suggestionPosition.left,
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            color: "gray",
+            padding: "4px 8px",
+            borderRadius: "4px",
+            fontSize: "14px",
+            zIndex: 1000,
+          }}
+        >
+          {suggestedText} (Press Tab to accept)
+        </div>
+      )}
+
+      {ModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}

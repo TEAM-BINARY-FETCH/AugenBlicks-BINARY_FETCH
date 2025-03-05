@@ -8,8 +8,6 @@ export const Signup = () => {
     name: "",
     email: "",
     password: "",
-    confirmPassword: "",
-    genres: [],
   });
 
   const { loading, signup } = useSignup();
@@ -19,16 +17,6 @@ export const Signup = () => {
     e.preventDefault();
     const success = await signup(inputs);
     if (success) navigate("/");
-  };
-
-  // Handle Multi-Select Genres
-  const handleGenreChange = (genre) => {
-    setInputs((prev) => ({
-      ...prev,
-      genres: prev.genres.includes(genre)
-        ? prev.genres.filter((g) => g !== genre)
-        : [...prev.genres, genre],
-    }));
   };
 
   return (
@@ -82,48 +70,6 @@ export const Signup = () => {
               className="w-full px-4 py-2 border border-gray-500 rounded-lg focus:ring focus:ring-yellow-400 outline-none text-black"
               required
             />
-          </div>
-
-          {/* Confirm Password Input */}
-          <div>
-            <label className="block text-black text-sm mb-2">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              value={inputs.confirmPassword}
-              onChange={(e) =>
-                setInputs({ ...inputs, confirmPassword: e.target.value })
-              }
-              placeholder="Confirm your password"
-              className="w-full px-4 py-2 border border-gray-500 rounded-lg focus:ring focus:ring-yellow-400 outline-none text-black"
-              required
-            />
-          </div>
-
-          {/* Genres (Multi-Select) */}
-          <div>
-            <label className="block text-black text-sm mb-2">
-              Select Your Podcast Genres
-            </label>
-            <div className="flex flex-wrap gap-3">
-              {["Technology", "Business", "Comedy", "Health", "Music"].map(
-                (genre) => (
-                  <label
-                    key={genre}
-                    className="flex items-center space-x-2 text-black px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-200 transition"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={inputs.genres.includes(genre)}
-                      onChange={() => handleGenreChange(genre)}
-                      className="form-checkbox text-yellow-500"
-                    />
-                    <span>{genre}</span>
-                  </label>
-                )
-              )}
-            </div>
           </div>
 
           {/* Already Have an Account */}

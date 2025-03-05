@@ -6,9 +6,8 @@ function useSignup() {
   const [loading, setLoading] = useState(false);
   const { setAuthUser, setAuthToken } = useAuthContext();
 
-  const signup = async ({ name, email, password, confirmPassword, genres }) => {
-    const success = handleInputErrors({ name, email, password, confirmPassword, genres });
-    if (!success) return false;
+  const signup = async ({ name, email, password }) => {
+    if (!handleInputErrors({ name, email, password })) return false;
 
     setLoading(true);
 
@@ -16,7 +15,7 @@ function useSignup() {
       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, confirmPassword, genres }),
+        body: JSON.stringify({ name, email, password }), // Removed role
       });
 
       const data = await res.json();
@@ -44,9 +43,9 @@ function useSignup() {
 
 export default useSignup;
 
-function handleInputErrors({ name, email, password, confirmPassword, genres }) {
-  if (!name || !email || !password || !confirmPassword || genres.length === 0) {
-    toast.error("Please fill in all fields and select at least one genre");
+function handleInputErrors({ name, email, password }) {
+  if (!name || !email || !password) {
+    toast.error("Please fill in all fields");
     return false;
   }
 
@@ -57,11 +56,6 @@ function handleInputErrors({ name, email, password, confirmPassword, genres }) {
 
   if (!/\S+@\S+\.\S+/.test(email)) {
     toast.error("Invalid email format");
-    return false;
-  }
-
-  if (password !== confirmPassword) {
-    toast.error("Passwords do not match");
     return false;
   }
 

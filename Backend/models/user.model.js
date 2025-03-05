@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, enum: ["admin", "editor", "viewer"], default: "editor" },
-    favouriteProjects: [{ type: mongoose.Schema.Types.ObjectId, ref: "Project" }],
+    favouriteProjects: [{ type: mongoose.Schema.Types.ObjectId, ref: "Project" }],default: [],
     profilePic: { type: String, default: "" },
   },
   { timestamps: true } 

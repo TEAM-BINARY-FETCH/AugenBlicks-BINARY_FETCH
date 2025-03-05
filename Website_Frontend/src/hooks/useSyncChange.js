@@ -11,7 +11,7 @@ const useSyncChange = (editorRef) => {
 
   // Emit content changes to the server
   useEffect(() => {
-    if (socket && currentDocument && currentProject) {
+    if (content?.trim() && socket && currentDocument && currentProject) {
       socket.emit("contentChange", {
         text: content,
         doc: currentDocument,
@@ -25,7 +25,7 @@ const useSyncChange = (editorRef) => {
   useEffect(() => {
     if (socket) {
       socket.on("onchangefromOther", ({ text, doc, project, userId }) => {
-        if (userId === authUser._id) return; // Ignore changes from the current user
+        if (text && text.trim() && userId === authUser._id) return; // Ignore changes from the current user
 
         // Update the document content in the state
         setDocuments((prevDocuments) =>

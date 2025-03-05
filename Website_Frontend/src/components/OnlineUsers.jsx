@@ -11,7 +11,7 @@ import { useProjectContext } from "../context/ProjectContext";
 export default function OnlineUsers() {
   const [showPopup, setShowPopup] = useState(false);
   const {onlineUsers} = useProjectContext();
-  // console.log("onlineUsers in online users",onlineUsers);
+  console.log("onlineUsers in online users",onlineUsers);
 
 
   return (
@@ -19,14 +19,10 @@ export default function OnlineUsers() {
       {/* User Avatars */}
       <div className="flex -space-x-2 cursor-pointer" onClick={() => setShowPopup(!showPopup)}>
         {onlineUsers.slice(0, 3).map((user, index) => (
-          <div
-            key={index}
-            className={`w-10 h-10 ${user.color} text-white font-bold bg-amber-500 flex items-center justify-center rounded-full border-2 border-gray-900 z-20`}
-            style={{ zIndex: onlineUsers.length - index }}
-          >
-            <p className="text-white">{user.name}</p>
-            
-          </div>
+          <div key={index} className="w-10 h-10 ${user.color} text-white font-boldflex items-center justify-center rounded-full border-2 z-20">
+          <img src={user.profilePic} alt="profilepic" className="rounded-full"/>
+
+            </div>
         ))}
       </div>
 
@@ -40,12 +36,13 @@ export default function OnlineUsers() {
         >
           <h3 className="text-lg font-bold mb-2">Online Users</h3>
           <ul>
-            {onlineUsers.map((user) => (
-              <li key={user._id} className="flex items-center gap-2 p-2 hover:bg-gray-700 rounded">
-                <div className={`w-8 h-8 ${user.color} text-white font-bold flex items-center justify-center rounded-full`}>
-                  {user.initials}
-                </div>
-                <span>{user.name}</span>
+            {onlineUsers.map((user,index) => (
+              <li key={index} className="flex items-center gap-2 p-2 hover:bg-gray-700 rounded">
+                <div className="w-10 h-10 ${user.color} text-white font-boldflex items-center justify-center rounded-full border-2 z-20">
+          <img src={user.profilePic} alt="profilepic" className="rounded-full"/>
+
+            </div>
+                <span>{user.username}</span>
               </li>
             ))}
           </ul>

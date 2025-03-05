@@ -25,17 +25,20 @@ io.on("connection", (socket) => {
     socket.join(projectId);
 
     const users = await User.find();
+    console.log("Users in project:", users);
     const clients = Array.from(io.sockets.adapter.rooms.get(projectId)).map(
       (socketId) => {
+        const user = users.find((user) => user._id == userSocketMap[socketId]);
+        console.log("User in project:", user);
         return {
           userId: userSocketMap[socketId],
           socketId,
-          username:
-            users.find((user) => user._id == userSocketMap[socketId])?.name ||
-            "Unknown",
+          username: user?.name || "Unknown",
+          profilePic: user?.profilePic || "default-profile.png",
         };
       }
     );
+    
 
     // Notify all clients in the project room
     clients.forEach((client) => {

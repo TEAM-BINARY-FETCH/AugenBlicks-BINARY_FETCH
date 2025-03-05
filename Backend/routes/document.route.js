@@ -6,6 +6,7 @@ import {
   deleteDocument,
   getDocumentsByProject,
   renameDocument,
+  updateViews,
   getVersion,
 } from "../controllers/document.controller.js";
 
@@ -17,6 +18,7 @@ router.put("/:id", updateDocument);
 router.delete("/:id", deleteDocument);
 router.get("/project/:projectId", getDocumentsByProject);
 router.put("/rename/:id", renameDocument);
+router.put("/update-views/:id", updateViews);
 router.get("/versions/:id", getVersion);
 
 

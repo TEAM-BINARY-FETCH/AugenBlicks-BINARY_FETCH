@@ -17,12 +17,15 @@ export const signUp = async (req, res) => {
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
+    const boyProfilePic = `https://avatar.iran.liara.run/public/boy`;
+    const girlProfilePic = `https://avatar.iran.liara.run/public/girl`;
 
     const newUser = await User.create({
       name,
       email,
       password: hashPassword,
       role: role || "editor",
+      profilePic: Math.random() > 0.5 ? boyProfilePic : girlProfilePic,
     });
 
     const token = generateTokenAndSetCookie(newUser._id, res);
@@ -68,6 +71,7 @@ export const loginUser = async (req, res) => {
       email: user.email,
       role: user.role,
       token,
+      profilePic: user.profilePic,
     });
   } catch (error) {
     console.log("Error in login controller:", error.message);
@@ -104,6 +108,7 @@ import { v2 as cloudinary } from "cloudinary";
 export const updateProfilePic = async (req, res) => {
   try {
     const { userId } = req.user;
+    console.log('userId',userId);
 
     if (!req.files || !req.files.profilePic) {
       return res.status(400).json({ error: "No image uploaded" });
@@ -145,3 +150,25 @@ export const getAllUsers = async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 };
+
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { userId } = req.user;
+    const { name, email } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    user.name = name || user.name;
+    user.email = email || user.email;   
+
+    const updatedUser = await user.save();
+    res.json({ user: updatedUser });
+  }
+  catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+}

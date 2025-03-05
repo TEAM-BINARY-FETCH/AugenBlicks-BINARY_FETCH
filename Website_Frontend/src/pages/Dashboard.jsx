@@ -4,7 +4,7 @@ import { FiPlus, FiFolder, FiClock, FiX } from "react-icons/fi";
 import { useAuthContext } from "../context/AuthContext";
 import axios from "axios";
 import { useProjectContext } from "../context/ProjectContext";
-import { FileHeart, FolderHeart, Heart, Star } from "lucide-react";
+import { ChartColumnIncreasing, Eye, FileHeart, FolderHeart, Heart, Star } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import useProject from "../hooks/useProject.js";
 
@@ -14,8 +14,10 @@ const Dashboard = () => {
   const [newProjectName, setNewProjectName] = useState("");
   const { authUser } = useAuthContext();
   const [loading, setLoading] = useState(true);
-  const {projects,setProjects,projectLoading, setProjectLoading} = useProjectContext();
+  const {documents, projects,setProjects,projectLoading, setProjectLoading} = useProjectContext();
   const {AddTofavorite, favoriteProjects, getFavoriteProjects, removeFavoriteProject} = useProject();
+  console.log('Projects in Dashboard',projects);
+  console.log('Document in Dashboard', documents);
 
   useEffect(() => {
     getFavoriteProjects();
@@ -58,7 +60,7 @@ const Dashboard = () => {
       </div>
 
       <Tabs defaultValue="all-projects" className="w-full mx-auto text-2xl">
-        <TabsList className="grid w-full grid-cols-2 bg-accent-foreground text-white">
+        <TabsList className="grid w-full grid-cols-3 bg-accent-foreground text-white">
           <TabsTrigger value="all-projects" className="text-xl">
             All Projects
           </TabsTrigger>
@@ -66,6 +68,11 @@ const Dashboard = () => {
             {" "}
             <Star className="text-red-500 text-2xl" />
             Favourite Projects
+          </TabsTrigger>
+          <TabsTrigger value="overview" className="text-xl">
+            {" "}
+            <ChartColumnIncreasing className="text-green-500 text-2xl"  />
+            Overview
           </TabsTrigger>
         </TabsList>
         <TabsContent value="all-projects">
@@ -168,6 +175,67 @@ const Dashboard = () => {
             </div>
           )}
         </TabsContent>
+        <TabsContent value="overview">
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 my-3">
+    {/* Total Projects Card */}
+    <motion.div
+      whileHover={{ scale: 1.03 }}
+      className="bg-gray-800 p-6 rounded-lg shadow-md text-white cursor-pointer transition-all"
+    >
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold">Total Projects</h3>
+          <p className="text-3xl font-bold mt-2">{projects.length}</p>
+        </div>
+        <FiFolder className="text-yellow-400 text-4xl" />
+      </div>
+      <p className="text-sm text-gray-400 mt-2">
+        Number of projects you've created.
+      </p>
+    </motion.div>
+
+    {/* Total Documents Card */}
+    <motion.div
+      whileHover={{ scale: 1.03 }}
+      className="bg-gray-800 p-6 rounded-lg shadow-md text-white cursor-pointer transition-all"
+    >
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold">Total Documents</h3>
+          <p className="text-3xl font-bold mt-2">
+            {documents?.length}
+          </p>
+        </div>
+        <FileHeart className="text-blue-400 text-4xl" />
+      </div>
+      <p className="text-sm text-gray-400 mt-2">
+        Number of documents across all projects.
+      </p>
+    </motion.div>
+
+    {/* Total Views Card */}
+    <motion.div
+      whileHover={{ scale: 1.03 }}
+      className="bg-gray-800 p-6 rounded-lg shadow-md text-white cursor-pointer transition-all"
+    >
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold">Total Views</h3>
+          <p className="text-3xl font-bold mt-2">
+            {documents?.reduce(
+              (acc, doc) => acc + doc.views,
+              0
+            )}
+          </p>
+        </div>
+        <Eye className="text-green-400 text-4xl" />
+      </div>
+      <p className="text-sm text-gray-400 mt-2">
+        Total views across all documents.
+      </p>
+    </motion.div>
+  </div>
+</TabsContent>
       </Tabs>
 
       {/* Create Project Modal */}

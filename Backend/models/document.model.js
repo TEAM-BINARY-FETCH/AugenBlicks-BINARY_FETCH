@@ -6,6 +6,7 @@ const DocumentSchema = new mongoose.Schema(
     title: { type: String, required: true },
     content: { type: String, default: "" },
     history: [{ type: mongoose.Schema.Types.ObjectId, ref: "VersionHistory" }],
+    views: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

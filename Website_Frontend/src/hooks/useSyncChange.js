@@ -19,7 +19,7 @@ const useSyncChange = (editorRef) => {
         userId: authUser._id,
       });
     }
-  }, [content, socket, currentDocument, currentProject, authUser]);
+  }, [content, socket, currentDocument, currentProject]);
 
   // Listen for content changes from other users
   useEffect(() => {

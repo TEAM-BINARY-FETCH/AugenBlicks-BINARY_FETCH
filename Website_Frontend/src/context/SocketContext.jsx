@@ -16,7 +16,7 @@ export const SocketContextProvider = ({ children }) => {
     if (authUser) {
       const newSocket = io(`${import.meta.env.VITE_BACKEND_URL}`, {
         query: {
-          userId:authUser?._id,
+          userId:  authUser?._id ,
         },
       });
       newSocket.on("connect", () => {
@@ -32,11 +32,8 @@ export const SocketContextProvider = ({ children }) => {
         socket.close();
         setSocket(null);
       }
-      return;
     }
-  
-  }, [authUser]);
-  
+  }, []);
 
   return (
     <SocketContext.Provider value={{ socket }}>

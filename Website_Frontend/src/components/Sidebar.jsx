@@ -244,14 +244,14 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                     <AiOutlineSetting /> Settings
                   </Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link
                     to="/templates"
                     className="p-3 rounded hover:bg-gray-700 flex items-center gap-2"
                   >
                     <HiOutlineTemplate /> Templates
                   </Link>
-                </li>
+                </li> */}
               </ul>
             </div>
           </div>

@@ -13,17 +13,16 @@ export const io = new Server(server, {
 });
 
 const userSocketMap = {};
-
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
-  console.log("User connected:", socket.id, userId);
+  // console.log('socket connected', socket.handshake);
+  console.log("a user connected", socket.id,userId);
   userSocketMap[socket.id] = userId;
 
-  // Handle project join event
-  socket.on("projectJoin", async ({ projectId, socketId, userId, name }) => {
-    console.log("User joined project:", projectId, userId);
+  socket.on("projectJoin", async ({ projectId, socketId, userId }) => {
+    console.log("user joined", socketId, projectId, userId);
     socket.join(projectId);
-
+    // console.log("users : ", users);
     const users = await User.find();
     console.log("Users in project:", users);
     const clients = Array.from(io.sockets.adapter.rooms.get(projectId)).map(
@@ -38,28 +37,34 @@ io.on("connection", (socket) => {
         };
       }
     );
-    
+    // console.log("clients : ",clients);
 
-    // Notify all clients in the project room
     clients.forEach((client) => {
       io.to(client.socketId).emit("projectJoined", {
         userId,
         clients,
         socketId: client.socketId,
-        name,
+        username:
+          users.find((user) => user._id == userId)?.name || "Unknown",
       });
     });
   });
 
-  // Handle content change event
   socket.on("contentChange", ({ text, doc, project, userId }) => {
-    console.log("Content changed:", text);
-    io.to(project._id).emit("onchangefromOther", { text, doc, project, userId });
+    // console.log("content change", content);
+    // console.log("currentDocument",currentDocument);
+    // console.log("currentProject",currentProject);
+    console.log("content changed ", text);
+
+    io.to(project?._id).emit("onchangefromOther", {
+      text,
+      doc,
+      project,
+      userId,
+    });
   });
 
-  // Handle user disconnect
   socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-    delete userSocketMap[socket.id];
+    console.log("user disconnected", socket.id);
   });
 });

@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useSocketContext } from "./SocketContext";
 import { useAuthContext } from "./AuthContext";
+import {toast} from 'react-hot-toast'
 import axios from "axios";
-import toast from "react-hot-toast";
 
 export const ProjectContext = createContext(); 
 export const useProjectContext = () => {
@@ -76,8 +76,6 @@ export const ProjectContextProvider = ({children}) => {
     };
   
   }, [currentProject?._id, authUser?._id, socket]);
-  
-  
 
   
   return <ProjectContext.Provider value={{projects,setProjects,projectLoading, setProjectLoading,documents,setDocuments,currentDocument,setCurrentDocument,currentProject,setCurrentProject,onlineUsers,setOnlineUsers,content, setContent}} >

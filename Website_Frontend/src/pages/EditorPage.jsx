@@ -24,7 +24,6 @@ import { useAuthContext } from "../context/AuthContext.jsx";
 import useGetVersion from "../hooks/useGetVersion";
 
 export default function App() {
-  const { socket } = useSocketContext();
   const { currentProject, currentDocument, setContent, documents } =
   useProjectContext();
   const [ModalOpen, setModalOpen] = useState(false);
@@ -38,9 +37,10 @@ export default function App() {
     left: 0,
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { generateAIContent } = useAITemplate();
+  
   const [savedContent, setSavedContent] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Loading state
-  const { generateAIContent } = useAITemplate();
   const { authUser } = useAuthContext();
   const { versionLoading, versions, getVersion,setVersions } = useGetVersion();
   

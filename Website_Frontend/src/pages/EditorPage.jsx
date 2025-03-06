@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Editor } from "@tinymce/tinymce-react";
-import AIChatBot from "../components/AIChatBot";
-import { specialChars } from "./../utils/specialChars.js";
+import AIChatBot from "../components/AIChatBot.jsx";
+import { specialChars } from "../utils/specialChars.js";
 import {
   Select,
   SelectContent,
@@ -9,9 +8,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { customTemplates } from "./../utils/customTemplates";
+import { customTemplates } from "../utils/customTemplates.js";
 import AIGenerateModal from "../components/AIGenerateModal.jsx";
-import useAITemplate from "../hooks/useAITemplate";
+import useAITemplate from "../hooks/useAITemplate.js";
 import { useSocketContext } from "../context/SocketContext.jsx";
 import useSyncChange from "../hooks/useSyncChange.js";
 import { useProjectContext } from "../context/ProjectContext.jsx";
@@ -22,6 +21,7 @@ import { motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import { useAuthContext } from "../context/AuthContext.jsx";
 import useGetVersion from "../hooks/useGetVersion.js";
+import TextEditor from "../components/TextEditor.jsx";
 
 export default function App() {
   const { currentProject, currentDocument, setContent, documents } =
@@ -38,11 +38,11 @@ export default function App() {
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { generateAIContent } = useAITemplate();
-  const [savedContent, setSavedContent] = useState()
-  const [isLoading, setIsLoading] = useState(false)
-  const {authUser } = useAuthContext();
-  const {versionLoading, versions, getVersion, setVersions} = useGetVersion()
-  
+  const [savedContent, setSavedContent] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const { authUser } = useAuthContext();
+  const { versionLoading, versions, getVersion, setVersions } = useGetVersion();
+
   useSyncChange(editorRef);
 
   useEffect(() => {
@@ -55,7 +55,11 @@ export default function App() {
 
     const updateViews = async () => {
       try {
-        const res = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/documents/update-views/${currentDocument._id}`);
+        const res = await axios.put(
+          `${import.meta.env.VITE_BACKEND_URL}/api/documents/update-views/${
+            currentDocument._id
+          }`
+        );
         console.log("Views updated:", res.data);
       } catch (error) {
         console.log("Error updating views:", error);
@@ -94,7 +98,6 @@ export default function App() {
     // } catch (error) {
     //   console.error("Error fetching suggestion:", error);
     // }
-
 
     console.log("Suggestion:", suggestion);
   };
@@ -154,7 +157,7 @@ export default function App() {
       editorRef.current.setContent(templateContent); // Load the selected template into the editor
     }
   };
-  
+
   const handleVersionSelect = (versionContent) => {
     if (editorRef.current) {
       editorRef.current.setContent(versionContent);
@@ -195,7 +198,6 @@ export default function App() {
   };
 
   const handleSave = async () => {
-    
     if (editorRef.current) {
       const content = editorRef.current.getContent();
       setSavedContent(content);
@@ -203,14 +205,14 @@ export default function App() {
         await axios.put(
           `${import.meta.env.VITE_BACKEND_URL}/api/documents/${
             currentDocument._id
-            }`,
-            {
-              content,
-              userId: authUser._id,
-            }
-          );
-          toast.success("Content saved successfully!");
-          getVersion();
+          }`,
+          {
+            content,
+            userId: authUser._id,
+          }
+        );
+        toast.success("Content saved successfully!");
+        getVersion();
       } catch (error) {
         console.log("Error saving content:", error);
         toast.error("Failed to save content");
@@ -269,154 +271,45 @@ export default function App() {
         <div className="mb-2 flex items-center gap-x-2">
           <label htmlFor="template-select">Select Version</label>
           <Select
-  id="version-select"
-  onValueChange={(value) => {
-    const selectedVersion = versions.find(
-      (version) => version?._id === value
-    );
+            id="version-select"
+            onValueChange={(value) => {
+              const selectedVersion = versions.find(
+                (version) => version?._id === value
+              );
 
-    if (selectedVersion) {
-      handleVersionSelect(selectedVersion.content);
-    }
-  }}
->
-  {console.log("currentDocument :", currentDocument)}
+              if (selectedVersion) {
+                handleVersionSelect(selectedVersion.content);
+              }
+            }}
+          >
+            {console.log("currentDocument :", currentDocument)}
 
-  <SelectTrigger className="w-[180px]">
-    <SelectValue placeholder="Select version" />
-  </SelectTrigger>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select version" />
+            </SelectTrigger>
 
-  <SelectContent>
-  {/* Display versions if available */}
-  {versions.length !== 0 ? (
-    versions.map((version, index) => (
-      <SelectItem key={index} value={version?._id}>
-        {index === versions.length - 1
-          ? "Current" // Show "Current" for the last version
-          : `${version?.userId.name} - ${new Date(version?.createdAt).toLocaleString()}`}
-      </SelectItem>
-    ))
-  ) : (
-    <SelectItem value="no-versions">No versions found</SelectItem>
-  )}
-</SelectContent>
-
-</Select>
-
+            <SelectContent>
+              {/* Display versions if available */}
+              {versions.length !== 0 ? (
+                versions.map((version, index) => (
+                  <SelectItem key={index} value={version?._id}>
+                    {index === versions.length - 1
+                      ? "Current" // Show "Current" for the last version
+                      : `${version?.userId.name} - ${new Date(
+                          version?.createdAt
+                        ).toLocaleString()}`}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem value="no-versions">No versions found</SelectItem>
+              )}
+            </SelectContent>
+          </Select>
         </div>
       </div>
+
       {/* TinyMCE Editor */}
-      <Editor
-        className="z-0"
-        apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
-        onInit={handleEditorInit}
-        value={editorContent}
-        onEditorChange={handleEditorChange}
-        initialValue={""}
-        init={{
-          plugins: [
-            "anchor",
-            "autolink",
-            "charmap",
-            "codesample",
-            "emoticons",
-            "image",
-            "link",
-            "lists",
-            "media",
-            "searchreplace",
-            "table",
-            "visualblocks",
-            "wordcount",
-            "checklist",
-            "mediaembed",
-            "casechange",
-            "export",
-            "formatpainter",
-            "pageembed",
-            "a11ychecker",
-            "tinymcespellchecker",
-            "permanentpen",
-            "powerpaste",
-            "advtable",
-            "advcode",
-            "editimage",
-            "advtemplate",
-            // "ai",
-            "mentions",
-            "tinycomments",
-            "tableofcontents",
-            "footnotes",
-            "mergetags",
-            "autocorrect",
-            "typography",
-            "inlinecss",
-            "markdown",
-            "importword",
-            "exportword",
-            "exportpdf",
-          ],
-          toolbar:
-            "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat | aigenerate",
-          tinycomments_mode: "embedded",
-          skin: "oxide-dark",
-          content_css: "dark",
-          fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
-          dark_mode: true,
-          height: 800,
-          selector: "textarea#autocompleter-autocompleteitem",
-          setup: (editor) => {
-            // Add a custom AI button to the toolbar
-            editor.ui.registry.addButton("aigenerate", {
-              text: "AI Generate",
-              onAction: () => setIsModalOpen(true),
-            });
-
-            // Autocompleter for special characters
-            const onAction = (autocompleteApi, rng, value) => {
-              editor.selection.setRng(rng);
-              editor.insertContent(value);
-              autocompleteApi.hide();
-            };
-
-            const getMatchedChars = (pattern) => {
-              return specialChars.filter(
-                (char) => char.text.indexOf(pattern) !== -1
-              );
-            };
-
-            editor.ui.registry.addAutocompleter("specialchars", {
-              trigger: ":",
-              minChars: 1,
-              columns: "auto",
-              onAction: onAction,
-              fetch: (pattern) => {
-                return new Promise((resolve) => {
-                  const results = getMatchedChars(pattern).map((char) => ({
-                    type: "autocompleteitem",
-                    value: char.value,
-                    text: char.text,
-                    icon: char.value,
-                  }));
-                  resolve(results);
-                });
-              },
-            });
-
-            // Add a placeholder for the suggestion
-            editor.on("input", () => {
-              console.log("Editor content:", editor.getContent());
-              if (suggestedText) {
-                const content = editor.getContent();
-                if (!content.includes(suggestedText)) {
-                  setSuggestedText(""); // Clear suggestion if editor content changes
-                }
-              }
-            });
-          },
-        }}
-        // initialValue="Welcome to TinyMCE!"
-      />
+      <TextEditor /> 
 
       <AIGenerateModal
         className="w-[400px]"

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useLogin from "../hooks/useLogin";
-import podcastImage from "../assets/podcastImage.webp";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
@@ -17,7 +16,7 @@ export const Login = () => {
 
   return (
     <div className="relative w-full min-h-screen bg-cover bg-center flex items-center justify-center" 
-         style={{ backgroundImage: `url(${podcastImage})` }}>
+         style={{}}>
       
 
       {/* Login Form */}

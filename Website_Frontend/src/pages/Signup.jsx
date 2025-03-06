@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useSignup from "../hooks/useSignup";
-import podcastImage from "../assets/podcastImage.webp";
 
 export const Signup = () => {
   const [inputs, setInputs] = useState({
@@ -22,7 +21,7 @@ export const Signup = () => {
   return (
     <div
       className="relative w-full min-h-screen bg-cover bg-center flex items-center justify-center"
-      style={{ backgroundImage: `url(${podcastImage})` }}
+      style={{}}
     >
       {/* Signup Form */}
       <div className="relative z-10 w-full max-w-md border border-gray-300 bg-white rounded-xl p-8 shadow-lg bg-opacity-80 backdrop-blur-md">
